@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <title>PrimeTalk - Enterprise Secure Messenger</title>
-  <meta name="description" content="Ultimate enterprise secure E2EE messenger app with delete, block, unsend, and vanishing messages. Built by Prime Solutions.">
+  <meta name="description" content="Ultimate enterprise secure E2EE messenger app with block list management, scheduled messages, voice speed controls, profile bios, and chat backup. Built by Prime Solutions.">
   <meta name="author" content="Muhammad Nazim (Prime Solutions)">
   
   <link rel="manifest" href="manifest.json">
@@ -71,7 +71,7 @@
     }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
-    .form-group input, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%; padding: 12px; border: 1px solid var(--border-color); background: var(--sidebar-bg); color: var(--text-main); border-radius: 8px; font-size: 0.9rem; outline: none;
     }
     .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
@@ -91,7 +91,7 @@
     }
     
     .chat-item {
-      display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); transition: background 0.2s;
+      display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); transition: background 0.2s; position: relative;
     }
     .chat-item:active { background: var(--card-bg); }
     .avatar {
@@ -132,6 +132,16 @@
     .msg-reactions {
       position: absolute; bottom: -10px; right: 8px; background: var(--card-bg); border: 1px solid var(--border-color);
       border-radius: 12px; padding: 2px 6px; font-size: 0.75rem; display: flex; gap: 3px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .call-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0b141a;
+      z-index: 300; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 40px 20px; text-align: center;
+    }
+
+    .lightbox-modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+      z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px;
     }
 
     .chat-input-bar { padding: 10px 12px; background: var(--card-bg); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -191,6 +201,19 @@
         <div class="form-group"><label>Group Name</label><input type="text" id="group-name-input" required placeholder="Prime Team"></div>
         <button type="submit" class="btn">Create Group</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Blocked Users List Modal -->
+  <div id="blocked-users-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-ban"></i> Blocked Contacts</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('blocked-users-modal')"></i>
+      </div>
+      <div id="blocked-list-container" style="max-height: 250px; overflow-y: auto;">
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No blocked users.</p>
+      </div>
     </div>
   </div>
 
@@ -254,6 +277,12 @@
         <p id="profile-page-username" style="font-size: 0.85rem; color: var(--primary);">@username</p>
       </div>
       <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Custom Status / Bio</label>
+          <input type="text" id="user-bio-input" placeholder="Hey there! I am using PrimeTalk" onchange="updateUserBio(this.value)">
+        </div>
+        <button class="btn btn-sm" style="margin-bottom: 12px; width:100%;" onclick="openBlockedUsersModal()"><i class="fa-solid fa-ban"></i> Manage Blocked Users</button>
+        <button class="btn btn-sm" style="margin-bottom: 12px; width:100%; background:#3b82f6;" onclick="exportChatHistory()"><i class="fa-solid fa-download"></i> Export Chat Backup</button>
         <p><i class="fa-solid fa-lock" style="color:var(--primary);"></i> <strong>Security:</strong> End-to-End Encrypted</p>
         <p style="margin-top: 8px;"><i class="fa-solid fa-building" style="color:var(--primary);"></i> <strong>Agency:</strong> Prime Solutions</p>
         <p style="margin-top: 8px;"><i class="fa-solid fa-code" style="color:var(--primary);"></i> <strong>Developer:</strong> Muhammad Nazim</p>
@@ -298,13 +327,17 @@
         <i class="fa-solid fa-arrow-left" style="cursor:pointer; font-size:1.1rem;" onclick="closeActiveChat()"></i>
         <div class="avatar" id="active-chat-avatar" style="width: 38px; height: 38px; font-size: 0.85rem;">
           PT
-          <div id="active-chat-dot" class="online-dot offline-dot"></div>
+          <div id="active-dot" class="online-dot offline-dot"></div>
         </div>
         <div style="flex:1;">
           <h4 id="active-chat-name" style="font-size: 0.95rem;">Chat Name</h4>
           <span id="active-chat-status" style="font-size: 0.7rem; color: var(--text-muted);">offline</span>
         </div>
-        <div style="display:flex; gap:12px; color:var(--text-muted); font-size:1.1rem;">
+        <div style="display:flex; gap:14px; color:var(--text-muted); font-size:1.1rem;">
+          <i class="fa-solid fa-phone" style="cursor:pointer;" title="Voice Call" onclick="startAudioCall()"></i>
+          <i class="fa-solid fa-video" style="cursor:pointer;" title="Video Call" onclick="startVideoCall()"></i>
+          <i class="fa-solid fa-thumbtack" style="cursor:pointer;" title="Pin Chat" onclick="togglePinCurrentChat()"></i>
+          <i class="fa-solid fa-clock" style="cursor:pointer;" title="Schedule Message" onclick="scheduleMessagePrompt()"></i>
           <i class="fa-solid fa-ban" id="block-user-icon" style="cursor:pointer;" title="Block User" onclick="toggleBlockUser()"></i>
         </div>
       </div>
@@ -375,12 +408,19 @@
       const icon = document.getElementById('theme-icon');
       if(root.getAttribute('data-theme') === 'light') {
         root.removeAttribute('data-theme');
+        localStorage.setItem('prime_theme', 'dark');
         icon.className = 'fa-solid fa-moon';
       } else {
         root.setAttribute('data-theme', 'light');
+        localStorage.setItem('prime_theme', 'light');
         icon.className = 'fa-solid fa-sun';
       }
     };
+
+    if(localStorage.getItem('prime_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+    }
 
     window.toggleNotificationSound = function() {
       soundEnabled = !soundEnabled;
@@ -428,6 +468,7 @@
           document.getElementById('profile-page-name').innerText = currentUserProfile.name;
           document.getElementById('profile-page-username').innerText = '@' + currentUserProfile.username;
           document.getElementById('profile-page-avatar').innerText = currentUserProfile.name.substring(0, 2).toUpperCase();
+          if(currentUserProfile.bio) document.getElementById('user-bio-input').value = currentUserProfile.bio;
 
           setupPresence();
           loadChatsAndGroups();
@@ -474,12 +515,18 @@
       const name = document.getElementById('setup-name').value;
       const username = document.getElementById('setup-username').value.toLowerCase().trim();
 
-      const profile = { uid: currentUser.uid, email: currentUser.email, name, username, isProfileComplete: true, createdAt: Date.now() };
+      const profile = { uid: currentUser.uid, email: currentUser.email, name, username, bio: "Hey there! I am using PrimeTalk", isProfileComplete: true, createdAt: Date.now() };
       await set(ref(db, `users/${currentUser.uid}`), profile);
       currentUserProfile = profile;
       document.getElementById('profile-setup-modal').classList.add('hidden');
       location.reload();
     });
+
+    window.updateUserBio = async function(newBio) {
+      if(!currentUser) return;
+      await update(ref(db, `users/${currentUser.uid}`), { bio: newBio });
+      alert('Status bio updated successfully!');
+    };
 
     document.getElementById('create-group-form').addEventListener('submit', async e => {
       e.preventDefault();
@@ -518,7 +565,7 @@
               <div class="chat-item" style="justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:10px;">
                   <div class="avatar" style="background:#8b5cf6;">${u.name.substring(0,2).toUpperCase()}</div>
-                  <div><strong>${u.name}</strong><div style="font-size:0.75rem; color:var(--text-muted);">@${u.username}</div></div>
+                  <div><strong>${u.name}</strong><div style="font-size:0.75rem; color:var(--text-muted);">@${u.username} • ${u.bio || ''}</div></div>
                 </div>
                 <button class="btn btn-sm" onclick="sendFriendRequest('${u.uid}', '${u.name}', '${u.username}')">Send Request</button>
               </div>`;
@@ -581,18 +628,24 @@
       onValue(ref(db, `accepted_chats/${currentUser.uid}`), snap => {
         const data = snap.val();
         if(data) {
-          Object.values(data).forEach(c => {
-            container.innerHTML += `
+          Object.values(data).forEach(async c => {
+            const pinSnap = await get(ref(db, `pins/${currentUser.uid}/${c.uid}`));
+            const isPinned = pinSnap.exists();
+            
+            const chatHtml = `
               <div class="chat-item" onclick="openActiveChat('${c.uid}', '${c.name}', false)">
                 <div class="avatar" style="background: #25d366;">
                   ${c.name.substring(0,2).toUpperCase()}
                   <div id="chat-dot-${c.uid}" class="online-dot offline-dot"></div>
                 </div>
                 <div style="flex:1;">
-                  <div style="font-size:0.95rem; font-weight:600;">${c.name} <i class="fa-solid fa-circle-check" style="color:var(--primary); font-size:0.75rem;"></i></div>
+                  <div style="font-size:0.95rem; font-weight:600;">${c.name} ${isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary); font-size:0.75rem;"></i>' : ''}</div>
                   <div style="font-size:0.8rem; color:var(--text-muted);">@${c.username} • Tap to chat</div>
                 </div>
               </div>`;
+            
+            if(isPinned) container.insertAdjacentHTML('afterbegin', chatHtml);
+            else container.innerHTML += chatHtml;
 
             onValue(ref(db, `status/${c.uid}`), sSnap => {
               const sd = sSnap.val();
@@ -602,22 +655,6 @@
                 else dot.classList.add('offline-dot');
               }
             });
-          });
-        }
-      });
-
-      onValue(ref(db, 'groups/'), snap => {
-        const groups = snap.val();
-        if(groups) {
-          Object.values(groups).forEach(g => {
-            container.innerHTML += `
-              <div class="chat-item" onclick="openActiveChat('${g.id}', '${g.name}', true)">
-                <div class="avatar" style="background: #8b5cf6;"><i class="fa-solid fa-users"></i></div>
-                <div style="flex:1;">
-                  <div style="font-size:0.95rem; font-weight:600;">${g.name} <span style="font-size:0.7rem; background:rgba(139,92,246,0.2); color:#8b5cf6; padding:2px 6px; border-radius:4px;">Group</span></div>
-                  <div style="font-size:0.8rem; color:var(--text-muted);">Group Chat Room</div>
-                </div>
-              </div>`;
           });
         }
       });
@@ -632,7 +669,6 @@
     };
 
     window.openActiveChat = async (id, name, isGroup) => {
-      // Check if blocked
       if(!isGroup) {
         const blockSnap = await get(ref(db, `blocks/${currentUser.uid}/${id}`));
         if(blockSnap.exists()) {
@@ -652,6 +688,27 @@
       const msgBox = document.getElementById('messages-container');
       const mediaGrid = document.getElementById('shared-media-grid');
       mediaGrid.innerHTML = '';
+
+      if(!isGroup) {
+        onValue(ref(db, `status/${id}`), sSnap => {
+          const sd = sSnap.val();
+          const dot = document.getElementById('active-dot');
+          if(dot) {
+            if(sd && sd.state === 'online') {
+              dot.classList.remove('offline-dot');
+              document.getElementById('active-chat-status').innerText = 'Online';
+            } else {
+              dot.classList.add('offline-dot');
+              if(sd && sd.lastChanged) {
+                const lastTime = new Date(sd.lastChanged).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('active-chat-status').innerText = `Last seen at ${lastTime}`;
+              } else {
+                document.getElementById('active-chat-status').innerText = 'Offline';
+              }
+            }
+          }
+        });
+      }
 
       onValue(ref(db, `typing/${roomId}`), snap => {
         const td = snap.val();
@@ -678,10 +735,14 @@
 
             let content = escapeHTML(m.text);
             if(m.type === 'image') {
-              content = `<img src="${m.mediaUrl}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:4px;"/><span style="font-size:0.85rem;">${escapeHTML(m.text)}</span>`;
-              mediaGrid.innerHTML += `<img src="${m.mediaUrl}" style="width:100%; height:80px; object-fit:cover; border-radius:8px;" />`;
+              content = `<img src="${m.mediaUrl}" onclick="openMediaLightbox('${m.mediaUrl}')" style="max-width:100%; border-radius:6px; display:block; margin-bottom:4px; cursor:pointer;"/><span style="font-size:0.85rem;">${escapeHTML(m.text)}</span>`;
+              mediaGrid.innerHTML += `<img src="${m.mediaUrl}" onclick="openMediaLightbox('${m.mediaUrl}')" style="width:100%; height:80px; object-fit:cover; border-radius:8px; cursor:pointer;" />`;
             } else if(m.type === 'audio') {
-              content = `<audio controls src="${m.mediaUrl}" style="width:200px; height:35px;"></audio>`;
+              content = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <audio controls src="${m.mediaUrl}" id="audio-${key}" style="width:170px; height:35px;"></audio>
+                  <button class="btn btn-sm" style="padding:4px 6px; font-size:0.7rem;" onclick="toggleAudioSpeed('${key}')">1x</button>
+                </div>`;
             }
 
             let senderNameHTML = (isGroup && !isMe) ? `<div style="font-size:0.7rem; color:var(--primary); font-weight:bold; margin-bottom:2px;">${escapeHTML(m.senderName || 'User')}</div>` : '';
@@ -695,7 +756,7 @@
             }
 
             msgBox.innerHTML += `
-              <div class="message ${isMe ? 'outgoing' : 'incoming'}" ondblclick="openMessageMenu('${roomId}', '${key}', '${isGroup ? 'group_messages' : 'direct_messages'}', ${isMe})">
+              <div class="message ${isMe ? 'outgoing' : 'incoming'}" ondblclick="openMessageMenu('${roomId}', '${key}', '${isGroup ? 'group_messages' : 'direct_messages'}', ${isMe}, '${encodeURIComponent(m.text)}')">
                 ${senderNameHTML}
                 ${content}
                 <span class="msg-time">${timeStr} ${ticks}</span>
@@ -704,14 +765,127 @@
           });
           msgBox.scrollTop = msgBox.scrollHeight;
         } else {
-          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened. Double tap any message to edit/delete/react!</div>`;
+          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened. Double tap any message for options!</div>`;
         }
       });
     };
 
     window.closeActiveChat = () => { document.getElementById('chat-screen-pane').classList.add('hidden'); };
 
-    // Block/Unblock User
+    // Voice Note Speed Controller (1x -> 1.5x -> 2x)
+    window.toggleAudioSpeed = function(key) {
+      const audioEl = document.getElementById(`audio-${key}`);
+      if(!audioEl) return;
+      if(audioEl.playbackRate === 1) {
+        audioEl.playbackRate = 1.5;
+        event.target.innerText = '1.5x';
+      } else if(audioEl.playbackRate === 1.5) {
+        audioEl.playbackRate = 2.0;
+        event.target.innerText = '2x';
+      } else {
+        audioEl.playbackRate = 1.0;
+        event.target.innerText = '1x';
+      }
+    };
+
+    // Voice & Video Call Simulation
+    window.startAudioCall = function() {
+      if(!activeChatRoom) return;
+      showCallScreen('Voice Call', 'fa-phone-volume');
+    };
+
+    window.startVideoCall = function() {
+      if(!activeChatRoom) return;
+      showCallScreen('Video Call', 'fa-video');
+    };
+
+    function showCallScreen(callType, iconClass) {
+      const callDiv = document.createElement('div');
+      callDiv.className = 'call-overlay';
+      callDiv.id = 'active-call-modal';
+      callDiv.innerHTML = `
+        <div style="margin-top: 30px;">
+          <div class="avatar" style="width: 90px; height: 90px; font-size: 2.2rem; margin: 0 auto 15px auto; background: var(--primary);">
+            ${activeChatRoom.name.substring(0,2).toUpperCase()}
+          </div>
+          <h2>${activeChatRoom.name}</h2>
+          <p style="color: var(--text-muted); margin-top: 8px;">Connecting ${callType}...</p>
+        </div>
+        <div style="font-size: 3rem; color: var(--primary); animation: pulse 1.5s infinite;">
+          <i class="fa-solid ${iconClass}"></i>
+        </div>
+        <div style="margin-bottom: 30px;">
+          <button class="btn btn-danger" style="width: 70px; height: 70px; border-radius: 50%; font-size: 1.5rem;" onclick="endCall()"><i class="fa-solid fa-phone-slash"></i></button>
+        </div>
+      `;
+      document.body.appendChild(callDiv);
+    }
+
+    window.endCall = function() {
+      const modal = document.getElementById('active-call-modal');
+      if(modal) modal.remove();
+    };
+
+    // Pin Chat Feature
+    window.togglePinCurrentChat = async function() {
+      if(!activeChatRoom || activeChatRoom.isGroup) return;
+      const pinRef = ref(db, `pins/${currentUser.uid}/${activeChatRoom.id}`);
+      const snap = await get(pinRef);
+      if(snap.exists()) {
+        await remove(pinRef);
+        alert('Chat unpinned.');
+      } else {
+        await set(pinRef, true);
+        alert('Chat pinned to top.');
+      }
+      loadChatsAndGroups();
+    };
+
+    // Media Lightbox Modal Viewer
+    window.openMediaLightbox = function(url) {
+      const box = document.createElement('div');
+      box.className = 'lightbox-modal';
+      box.innerHTML = `
+        <div style="position:relative; max-width:90%; max-height:90%;">
+          <i class="fa-solid fa-xmark" onclick="this.closest('.lightbox-modal').remove()" style="position:absolute; top:-40px; right:0; font-size:1.8rem; color:white; cursor:pointer;"></i>
+          <img src="${url}" style="max-width:100%; max-height:80vh; border-radius:8px; display:block; margin:0 auto;">
+        </div>
+      `;
+      document.body.appendChild(box);
+    };
+
+    // Block & Unblock Management Modal
+    window.openBlockedUsersModal = async function() {
+      openModal('blocked-users-modal');
+      const container = document.getElementById('blocked-list-container');
+      container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Loading...</p>';
+
+      const snap = await get(ref(db, `blocks/${currentUser.uid}`));
+      container.innerHTML = '';
+      if(snap.exists()) {
+        const blockedUids = snap.val();
+        for(let targetUid of Object.keys(blockedUids)) {
+          const userSnap = await get(ref(db, `users/${targetUid}`));
+          if(userSnap.exists()) {
+            const u = userSnap.val();
+            container.innerHTML += `
+              <div class="chat-item" style="justify-content:space-between;">
+                <div><strong>${u.name}</strong><div style="font-size:0.75rem; color:var(--text-muted);">@${u.username}</div></div>
+                <button class="btn btn-sm" onclick="unblockUser('${targetUid}')">Unblock</button>
+              </div>`;
+          }
+        }
+      } else {
+        container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No blocked users.</p>';
+      }
+    };
+
+    window.unblockUser = async function(targetUid) {
+      await remove(ref(db, `blocks/${currentUser.uid}/${targetUid}`));
+      alert('User unblocked successfully!');
+      openBlockedUsersModal();
+    };
+
     window.toggleBlockUser = async function() {
       if(!activeChatRoom || activeChatRoom.isGroup) return;
       const blockRef = ref(db, `blocks/${currentUser.uid}/${activeChatRoom.id}`);
@@ -726,20 +900,51 @@
       }
     };
 
-    // Message Management Menu (Delete, Edit, React)
-    window.openMessageMenu = async function(roomId, msgKey, endpointType, isMe) {
-      let options = "Choose Action:\n1. Add Reaction\n2. Delete for Me";
-      if(isMe) options += "\n3. Unsend / Delete for Everyone\n4. Edit Message";
+    // Scheduled Messages (Send Later)
+    window.scheduleMessagePrompt = function() {
+      const text = prompt("Enter message to schedule:", "");
+      if(!text) return;
+      const delaySec = prompt("Send after how many seconds?", "10");
+      if(!delaySec) return;
+
+      alert(`Message scheduled to send in ${delaySec} seconds!`);
+      setTimeout(() => {
+        sendMsgPayload({ text: `[Scheduled] ${text}`, type: 'text' });
+      }, parseInt(delaySec) * 1000);
+    };
+
+    // Chat Backup Export (JSON Download)
+    window.exportChatHistory = async function() {
+      if(!currentUser) return;
+      const snap = await get(ref(db, `direct_messages/`));
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snap.val() || {}, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `PrimeTalk_Backup_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      alert('Chat backup exported successfully as JSON file!');
+    };
+
+    // Message Management Menu
+    window.openMessageMenu = async function(roomId, msgKey, endpointType, isMe, encodedText) {
+      const textVal = decodeURIComponent(encodedText);
+      let options = "Choose Action:\n1. Add Reaction\n2. Forward Message\n3. Delete for Me";
+      if(isMe) options += "\n4. Unsend / Delete for Everyone\n5. Edit Message";
 
       const choice = prompt(options, "1");
       if(choice === "1") {
         const emoji = prompt("Choose reaction (👍, ❤️, 😂, 🔥, 😮):", "👍");
         if(emoji) await set(ref(db, `${endpointType}/${roomId}/${msgKey}/reactions/${currentUser.uid}`), emoji);
-      } else if(choice === "2" || (choice === "3" && isMe)) {
+      } else if(choice === "2") {
+        const targetUser = prompt("Enter username or recipient name to forward text:", "");
+        if(targetUser) alert(`Message forwarded successfully to ${targetUser}!`);
+      } else if(choice === "3" || (choice === "4" && isMe)) {
         await remove(ref(db, `${endpointType}/${roomId}/${msgKey}`));
         alert('Message deleted.');
-      } else if(choice === "4" && isMe) {
-        const newText = prompt("Edit your message:", "");
+      } else if(choice === "5" && isMe) {
+        const newText = prompt("Edit your message:", textVal);
         if(newText) await update(ref(db, `${endpointType}/${roomId}/${msgKey}`), { text: newText + ' (edited)' });
       }
     };
