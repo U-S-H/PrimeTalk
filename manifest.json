@@ -4,9 +4,9 @@
   "display": "standalone",
   "name": "PrimeTalk Enterprise",
   "orientation": "any",
-  "scope": "./",
+  "scope": "/",
   "short_name": "PrimeTalk",
-  "start_url": "./index.html",
+  "start_url": "/",
   "theme_color": "#0b141a",
   "id": "primetalk.enterprise",
   "description": "PrimeTalk Enterprise Secure Messenger and Video Conferencing Platform by Prime Solutions.",
@@ -33,7 +33,7 @@
       "name": "Start Video Meeting",
       "short_name": "Meeting",
       "description": "Quickly start an enterprise video conference",
-      "url": "./index.html#meeting",
+      "url": "/#meeting",
       "icons": [
         {
           "src": "192.png",
@@ -45,7 +45,7 @@
       "name": "View Secure Chats",
       "short_name": "Chats",
       "description": "Open your encrypted messages",
-      "url": "./index.html#chats",
+      "url": "/#chats",
       "icons": [
         {
           "src": "192.png",
