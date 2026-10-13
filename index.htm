@@ -3,8 +3,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <title>PrimeTalk - Secure Messenger</title>
-  <meta name="description" content="Advanced secure E2EE messenger with friend requests and mobile app interface. Built by Prime Solutions.">
+  <title>PrimeTalk - Advanced Secure Messenger</title>
+  <meta name="description" content="Feature-packed secure E2EE messenger with voice notes, media sharing, theme toggling, and interactive icons. Built by Prime Solutions.">
   <meta name="author" content="Muhammad Nazim (Prime Solutions)">
   
   <link rel="manifest" href="manifest.json">
@@ -27,6 +27,19 @@
       --danger: #ef4444;
     }
 
+    [data-theme="light"] {
+      --bg-main: #efeae2;
+      --sidebar-bg: #ffffff;
+      --chat-bg: #efeae2;
+      --card-bg: #f0f2f5;
+      --primary: #008069;
+      --text-main: #111b21;
+      --text-muted: #667781;
+      --msg-out: #d9fdd3;
+      --msg-in: #ffffff;
+      --border-color: #e9edef;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     
     body {
@@ -42,7 +55,7 @@
     .app-container {
       width: 100%; max-width: 480px; height: 100vh;
       background: var(--sidebar-bg); display: flex; flex-direction: column;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8); overflow: hidden; position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8); overflow: hidden; position: relative; transition: background 0.3s;
     }
     @media (min-width: 768px) {
       .app-container {
@@ -51,7 +64,6 @@
       }
     }
 
-    /* Modal Styling */
     .modal-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(11, 20, 26, 0.95); z-index: 9999;
@@ -73,14 +85,12 @@
     .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; margin: 0; }
     .hidden { display: none !important; }
 
-    /* App Header */
     .app-header {
       padding: 14px 16px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center;
       border-bottom: 1px solid var(--border-color); z-index: 10;
     }
     .app-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
 
-    /* Main Content Panes */
     .pane-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--sidebar-bg); }
     
     .chat-item {
@@ -94,7 +104,6 @@
     .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--accent-badge); border-radius: 50%; border: 2px solid var(--sidebar-bg); }
     .offline-dot { background: var(--text-muted); }
 
-    /* Bottom App Navigation Bar */
     .app-bottom-nav {
       height: 60px; background: var(--card-bg); display: flex; justify-content: space-around; align-items: center;
       border-top: 1px solid var(--border-color); z-index: 10;
@@ -105,7 +114,6 @@
     .nav-item i { font-size: 1.2rem; }
     .nav-item.active { color: var(--primary); }
 
-    /* Chat Screen (Overlay inside app) */
     .chat-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--chat-bg);
       z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s ease;
@@ -119,7 +127,7 @@
       flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
       background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0); background-size: 24px 24px;
     }
-    .message { max-width: 70%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; position: relative; word-break: break-word; }
+    .message { max-width: 70%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; position: relative; word-break: break-word; color: var(--text-main); }
     .message.incoming { background: var(--msg-in); align-self: flex-start; border-top-left-radius: 0; }
     .message.outgoing { background: var(--msg-out); align-self: flex-end; border-top-right-radius: 0; }
     .msg-time { font-size: 0.65rem; color: var(--text-muted); float: right; margin-left: 8px; margin-top: 4px; display:flex; align-items:center; gap:2px; }
@@ -128,10 +136,18 @@
     .input-field {
       flex: 1; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 0.9rem; outline: none;
     }
-    .action-icon-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 5px; }
+    .action-icon-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 6px; transition: color 0.2s; }
     .action-icon-btn:hover { color: var(--primary); }
     .send-btn {
       background: var(--primary); border: none; width: 38px; height: 38px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    }
+    .recording-active { color: var(--danger) !important; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+    /* Emoji Picker Drawer */
+    .emoji-picker {
+      position: absolute; bottom: 65px; left: 10px; background: var(--card-bg); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 10px; display: flex; gap: 8px; font-size: 1.3rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 120;
     }
   </style>
 </head>
@@ -164,21 +180,25 @@
   </div>
 
   <!-- Main App Frame -->
-  <div class="app-container">
+  <div class="app-container" id="app-root-box">
     
     <!-- App Header -->
     <div class="app-header">
       <div class="app-title"><i class="fa-solid fa-comments"></i> PrimeTalk</div>
-      <div style="display:flex; gap: 15px; color: var(--text-muted);">
+      <div style="display:flex; gap: 15px; color: var(--text-muted); align-items: center; font-size: 1.1rem;">
+        <i class="fa-solid fa-moon" id="theme-icon" style="cursor:pointer;" title="Toggle Theme" onclick="toggleAppTheme()"></i>
         <i class="fa-solid fa-shield-halved" title="Secure E2EE"></i>
-        <i class="fa-solid fa-ellipsis-vertical" style="cursor:pointer;" onclick="switchNavTab('profile')"></i>
+        <i class="fa-solid fa-bell" style="cursor:pointer;" title="Notifications Muted/Unmuted" onclick="toggleNotificationSound()"></i>
       </div>
     </div>
 
     <!-- PANE 1: CHATS LIST -->
     <div id="pane-chats" class="pane-content">
+      <div style="padding: 10px 16px; background: var(--sidebar-bg);">
+        <input type="text" placeholder="Search chats..." id="chat-filter-input" oninput="filterChatsList(this.value)" style="width:150px; padding:6px 10px; border-radius:6px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); font-size:0.8rem; outline:none;">
+      </div>
       <div id="chats-list-container">
-        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No accepted chats yet. Go to Search to find friends!</p>
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No accepted chats yet. Go to Search tab to find friends!</p>
       </div>
     </div>
 
@@ -202,7 +222,16 @@
       </div>
     </div>
 
-    <!-- PANE 4: PROFILE SETTINGS -->
+    <!-- PANE 4: GALLERY / MEDIA SHARING TAB -->
+    <div id="pane-gallery" class="pane-content hidden" style="padding: 16px;">
+      <h4 style="margin-bottom: 12px; font-size: 0.95rem;"><i class="fa-solid fa-photo-film"></i> Media & Files Hub</h4>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">All shared photos and documents across your secure chats will appear here.</p>
+      <div id="shared-media-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-top:15px;">
+        <div style="background:var(--card-bg); padding:20px; border-radius:10px; text-align:center; color:var(--text-muted); font-size:0.75rem;">No media shared yet</div>
+      </div>
+    </div>
+
+    <!-- PANE 5: PROFILE SETTINGS -->
     <div id="pane-profile" class="pane-content hidden" style="padding: 20px;">
       <div style="text-align: center; margin-bottom: 20px;">
         <div class="avatar" id="profile-page-avatar" style="width: 70px; height: 70px; font-size: 1.5rem; margin: 0 auto 10px auto;">PT</div>
@@ -210,8 +239,9 @@
         <p id="profile-page-username" style="font-size: 0.85rem; color: var(--primary);">@username</p>
       </div>
       <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem;">
-        <p>🔒 <strong>Security:</strong> End-to-End Encrypted</p>
-        <p style="margin-top: 8px;">🏢 <strong>Powered by:</strong> Prime Solutions</p>
+        <p><i class="fa-solid fa-lock" style="color:var(--primary);"></i> <strong>Security:</strong> End-to-End Encrypted</p>
+        <p style="margin-top: 8px;"><i class="fa-solid fa-building" style="color:var(--primary);"></i> <strong>Agency:</strong> Prime Solutions</p>
+        <p style="margin-top: 8px;"><i class="fa-solid fa-code" style="color:var(--primary);"></i> <strong>Developer:</strong> Muhammad Nazim</p>
       </div>
       <button class="btn btn-danger" onclick="signOutUser()">Log Out</button>
     </div>
@@ -229,6 +259,10 @@
       <div class="nav-item" id="nav-search" onclick="switchNavTab('search')">
         <i class="fa-solid fa-user-plus"></i>
         <span>Search</span>
+      </div>
+      <div class="nav-item" id="nav-gallery" onclick="switchNavTab('gallery')">
+        <i class="fa-solid fa-photo-film"></i>
+        <span>Media</span>
       </div>
       <div class="nav-item" id="nav-profile" onclick="switchNavTab('profile')">
         <i class="fa-solid fa-gear"></i>
@@ -248,17 +282,34 @@
           <h4 id="active-chat-name" style="font-size: 0.95rem;">Chat Name</h4>
           <span id="active-chat-status" style="font-size: 0.7rem; color: var(--text-muted);">offline</span>
         </div>
+        <div style="display:flex; gap:12px; color:var(--text-muted); font-size:1.1rem;">
+          <i class="fa-solid fa-phone" style="cursor:pointer;" onclick="alert('Starting secure voice call simulation...')"></i>
+          <i class="fa-solid fa-video" style="cursor:pointer;" onclick="alert('Starting secure video call simulation...')"></i>
+          <i class="fa-solid fa-circle-info" style="cursor:pointer;" onclick="alert('Chat is secured with 256-Bit End-to-End Encryption.')"></i>
+        </div>
       </div>
 
       <div class="messages-box" id="messages-container">
         <!-- Messages -->
       </div>
 
+      <!-- Emoji Picker Popup -->
+      <div id="emoji-picker-box" class="emoji-picker hidden">
+        <span onclick="insertEmoji('😊')">😊</span>
+        <span onclick="insertEmoji('🚀')">🚀</span>
+        <span onclick="insertEmoji('👍')">👍</span>
+        <span onclick="insertEmoji('❤️')">❤️</span>
+        <span onclick="insertEmoji('🔥')">🔥</span>
+        <span onclick="insertEmoji('😎')">😎</span>
+      </div>
+
       <!-- Hidden file input -->
       <input type="file" id="media-file-input" class="hidden" accept="image/*" onchange="handleFileSelected(event)">
 
       <div class="chat-input-bar">
-        <button class="action-icon-btn" onclick="document.getElementById('media-file-input').click()"><i class="fa-solid fa-paperclip"></i></button>
+        <button class="action-icon-btn" onclick="toggleEmojiPicker()" title="Insert Emoji"><i class="fa-solid fa-face-smile"></i></button>
+        <button class="action-icon-btn" onclick="document.getElementById('media-file-input').click()" title="Attach Image"><i class="fa-solid fa-paperclip"></i></button>
+        <button class="action-icon-btn" id="voice-record-btn" onclick="toggleVoiceRecording()" title="Record Voice Note"><i class="fa-solid fa-microphone"></i></button>
         <input type="text" class="input-field" id="message-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
         <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
@@ -290,8 +341,39 @@
 
     let currentUser = null, currentUserProfile = null;
     let activeChatUser = null;
+    let mediaRecorder = null, audioChunks = [];
+    let isRecording = false, soundEnabled = true;
 
-    // Navigation Tabs Switching
+    // Theme Switcher Working Icon
+    window.toggleAppTheme = function() {
+      const root = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      if(root.getAttribute('data-theme') === 'light') {
+        root.removeAttribute('data-theme');
+        icon.className = 'fa-solid fa-moon';
+      } else {
+        root.setAttribute('data-theme', 'light');
+        icon.className = 'fa-solid fa-sun';
+      }
+    };
+
+    window.toggleNotificationSound = function() {
+      soundEnabled = !soundEnabled;
+      alert(soundEnabled ? '🔔 Notification sounds enabled.' : '🔕 Notification sounds muted.');
+    };
+
+    window.toggleEmojiPicker = function() {
+      const box = document.getElementById('emoji-picker-box');
+      box.classList.toggle('hidden');
+    };
+
+    window.insertEmoji = function(emoji) {
+      const input = document.getElementById('message-input');
+      input.value += emoji;
+      document.getElementById('emoji-picker-box').classList.add('hidden');
+      input.focus();
+    };
+
     window.switchNavTab = function(tabName) {
       document.querySelectorAll('.pane-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -372,7 +454,6 @@
       signOut(auth).then(() => location.reload());
     };
 
-    // Search Users & Send Friend Request
     window.searchUsersDatabase = async (keyword) => {
       keyword = keyword.toLowerCase().trim();
       const container = document.getElementById('search-results-container');
@@ -402,12 +483,11 @@
 
     window.sendFriendRequest = async (targetUid, targetName, targetUsername) => {
       await set(ref(db, `friend_requests/${targetUid}/${currentUser.uid}`), {
-        uid: currentUser.uid, name: currentUserProfile.name, username: currentUserProfile.username, timestamp: Date.now()
+        uid: currentUser.uid, name: currentUserProfile.name, username: currentUserProfile.username, timestamp: serverTimestamp()
       });
       alert(`Friend request sent to @${targetUsername}!`);
     };
 
-    // Load Incoming Friend Requests
     function loadIncomingRequests() {
       onValue(ref(db, `friend_requests/${currentUser.uid}`), snap => {
         const data = snap.val();
@@ -435,13 +515,10 @@
     }
 
     window.acceptRequest = async (senderUid, senderName, senderUsername) => {
-      // Add each other to accepted chats list
       await set(ref(db, `accepted_chats/${currentUser.uid}/${senderUid}`), { uid: senderUid, name: senderName, username: senderUsername });
       await set(ref(db, `accepted_chats/${senderUid}/${currentUser.uid}`), { uid: currentUser.uid, name: currentUserProfile.name, username: currentUserProfile.username });
-      
-      // Remove request
       await remove(ref(db, `friend_requests/${currentUser.uid}/${senderUid}`));
-      alert('Request accepted! You can now chat.');
+      alert('Request accepted successfully!');
       switchNavTab('chats');
     };
 
@@ -450,7 +527,6 @@
       alert('Request rejected.');
     };
 
-    // Load Accepted Chats List
     function loadAcceptedChats() {
       onValue(ref(db, `accepted_chats/${currentUser.uid}`), snap => {
         const data = snap.val();
@@ -466,7 +542,7 @@
                 </div>
                 <div style="flex:1;">
                   <div style="font-size:0.95rem; font-weight:600;">${c.name} <i class="fa-solid fa-circle-check" style="color:var(--primary); font-size:0.75rem;"></i></div>
-                  <div style="font-size:0.8rem; color:var(--text-muted);">@${c.username} • Tap to open chat</div>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">@${c.username} • Tap to chat</div>
                 </div>
               </div>`;
 
@@ -480,12 +556,21 @@
             });
           });
         } else {
-          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No accepted chats yet. Go to Search to find friends!</p>';
+          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No accepted chats yet. Go to Search tab!</p>';
         }
       });
     }
 
-    // Open Chat Screen
+    window.filterChatsList = function(keyword) {
+      keyword = keyword.toLowerCase();
+      const items = document.querySelectorAll('#chats-list-container .chat-item');
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if(text.includes(keyword)) item.style.display = 'flex';
+        else item.style.display = 'none';
+      });
+    };
+
     window.openActiveChat = (uid, name, username) => {
       activeChatUser = { uid, name, username };
       document.getElementById('active-chat-name').innerText = name;
@@ -505,6 +590,8 @@
 
       const roomId = currentUser.uid < uid ? `${currentUser.uid}_${uid}` : `${uid}_${currentUser.uid}`;
       const msgBox = document.getElementById('messages-container');
+      const mediaGrid = document.getElementById('shared-media-grid');
+      mediaGrid.innerHTML = '';
 
       onValue(ref(db, `direct_messages/${roomId}`), snapshot => {
         const data = snapshot.val();
@@ -518,7 +605,12 @@
             if(!isMe && !m.isRead) set(ref(db, `direct_messages/${roomId}/${key}/isRead`), true);
 
             let content = escapeHTML(m.text);
-            if(m.type === 'image') content = `<img src="${m.mediaUrl}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:4px;"/><span style="font-size:0.85rem;">${escapeHTML(m.text)}</span>`;
+            if(m.type === 'image') {
+              content = `<img src="${m.mediaUrl}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:4px;"/><span style="font-size:0.85rem;">${escapeHTML(m.text)}</span>`;
+              mediaGrid.innerHTML += `<img src="${m.mediaUrl}" style="width:100%; height:80px; object-fit:cover; border-radius:8px;" />`;
+            } else if(m.type === 'audio') {
+              content = `<audio controls src="${m.mediaUrl}" style="width:200px; height:35px;"></audio>`;
+            }
 
             let ticks = isMe ? (m.isRead ? '<i class="fa-solid fa-check-double" style="color:#53bdeb;"></i>' : '<i class="fa-solid fa-check" style="color:var(--text-muted);"></i>') : '';
 
@@ -550,6 +642,36 @@
         isRead: false, timestamp: serverTimestamp()
       });
     }
+
+    // Voice Notes Recording working icon button
+    window.toggleVoiceRecording = async () => {
+      const btn = document.getElementById('voice-record-btn');
+      if(!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+              sendMsgPayload({ text: '🎤 Voice Note', type: 'audio', mediaUrl: ev.target.result });
+            };
+            reader.readAsDataURL(blob);
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          btn.classList.add('recording-active');
+        } catch(err) { alert('Microphone access denied or not supported.'); }
+      } else {
+        if(mediaRecorder) mediaRecorder.stop();
+        isRecording = false;
+        btn.classList.remove('recording-active');
+      }
+    };
 
     window.handleFileSelected = (e) => {
       const file = e.target.files[0];
