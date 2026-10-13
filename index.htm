@@ -3,8 +3,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <title>PrimeTalk - Secure Messenger</title>
-  <meta name="description" content="Secure E2EE mobile-first messenger app built by Prime Solutions.">
+  <title>PrimeTalk - Ultimate Secure Messenger</title>
+  <meta name="description" content="Ultimate secure E2EE mobile-first messenger app with typing indicators, reactions, group chats, and custom wallpapers. Built by Prime Solutions.">
   <meta name="author" content="Muhammad Nazim (Prime Solutions)">
   
   <link rel="manifest" href="manifest.json">
@@ -25,6 +25,7 @@
       --border-color: #222d34;
       --accent-badge: #00d25b;
       --danger: #ef4444;
+      --chat-wallpaper: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
     }
 
     [data-theme="light"] {
@@ -38,6 +39,7 @@
       --msg-out: #d9fdd3;
       --msg-in: #ffffff;
       --border-color: #e9edef;
+      --chat-wallpaper: none;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -51,17 +53,9 @@
       position: fixed;
     }
 
-    /* True App-Like Layout */
     .app-container {
-      width: 100%;
-      height: 100%;
-      background: var(--sidebar-bg);
-      display: flex;
-      flex-direction: column;
-      position: absolute;
-      top: 0;
-      left: 0;
-      overflow: hidden;
+      width: 100%; height: 100%; background: var(--sidebar-bg);
+      display: flex; flex-direction: column; position: absolute; top: 0; left: 0; overflow: hidden;
     }
 
     .modal-overlay {
@@ -73,10 +67,11 @@
       background: var(--card-bg); color: var(--text-main);
       width: 100%; max-width: 380px; border-radius: 16px; padding: 24px;
       border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      max-height: 85vh; overflow-y: auto;
     }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
-    .form-group input {
+    .form-group input, .form-group select {
       width: 100%; padding: 12px; border: 1px solid var(--border-color); background: var(--sidebar-bg); color: var(--text-main); border-radius: 8px; font-size: 0.9rem; outline: none;
     }
     .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
@@ -85,21 +80,14 @@
     .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; margin: 0; }
     .hidden { display: none !important; }
 
-    /* App Header */
     .app-header {
       height: 56px; padding: 0 16px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center;
       border-bottom: 1px solid var(--border-color); z-index: 10; flex-shrink: 0;
     }
     .app-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
 
-    /* Main Panes Container */
     .pane-content {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      background: var(--sidebar-bg);
-      -webkit-overflow-scrolling: touch;
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--sidebar-bg); -webkit-overflow-scrolling: touch;
     }
     
     .chat-item {
@@ -113,17 +101,9 @@
     .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--accent-badge); border-radius: 50%; border: 2px solid var(--sidebar-bg); }
     .offline-dot { background: var(--text-muted); }
 
-    /* Bottom App Navigation Bar (Fixed properly) */
     .app-bottom-nav {
-      height: 60px;
-      background: var(--card-bg);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      border-top: 1px solid var(--border-color);
-      z-index: 100;
-      flex-shrink: 0;
-      width: 100%;
+      height: 60px; background: var(--card-bg); display: flex; justify-content: space-around; align-items: center;
+      border-top: 1px solid var(--border-color); z-index: 10; flex-shrink: 0; width: 100%;
     }
     .nav-item {
       display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; font-weight: 600; flex: 1;
@@ -131,7 +111,6 @@
     .nav-item i { font-size: 1.2rem; }
     .nav-item.active { color: var(--primary); }
 
-    /* Fullscreen Chat Screen Overlay */
     .chat-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--chat-bg);
       z-index: 200; display: flex; flex-direction: column; transition: transform 0.25s ease-in-out;
@@ -143,13 +122,18 @@
     }
     .messages-box {
       flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0); background-size: 24px 24px;
-      -webkit-overflow-scrolling: touch;
+      background-image: var(--chat-wallpaper); background-size: 24px 24px; -webkit-overflow-scrolling: touch;
     }
     .message { max-width: 78%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; position: relative; word-break: break-word; color: var(--text-main); }
     .message.incoming { background: var(--msg-in); align-self: flex-start; border-top-left-radius: 0; }
     .message.outgoing { background: var(--msg-out); align-self: flex-end; border-top-right-radius: 0; }
     .msg-time { font-size: 0.65rem; color: var(--text-muted); float: right; margin-left: 8px; margin-top: 4px; display:flex; align-items:center; gap:2px; }
+
+    /* Message Reactions Tag */
+    .msg-reactions {
+      position: absolute; bottom: -10px; right: 8px; background: var(--card-bg); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 2px 6px; font-size: 0.75rem; display: flex; gap: 3px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
 
     .chat-input-bar { padding: 10px 12px; background: var(--card-bg); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .input-field {
@@ -197,16 +181,30 @@
     </div>
   </div>
 
-  <!-- True Fullscreen Mobile App Container -->
-  <div class="app-container" id="app-root-box">
+  <!-- Create Group Modal -->
+  <div id="create-group-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-users-rectangle"></i> Create Group Chat</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('create-group-modal')"></i>
+      </div>
+      <form id="create-group-form">
+        <div class="form-group"><label>Group Name</label><input type="text" id="group-name-input" required placeholder="Prime Solutions Team"></div>
+        <button type="submit" class="btn">Create Group</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- App Container -->
+  <div class="app-container">
     
     <!-- App Header -->
     <div class="app-header">
       <div class="app-title"><i class="fa-solid fa-comments"></i> PrimeTalk</div>
       <div style="display:flex; gap: 15px; color: var(--text-muted); align-items: center; font-size: 1.1rem;">
-        <i class="fa-solid fa-moon" id="theme-icon" style="cursor:pointer;" onclick="toggleAppTheme()"></i>
-        <i class="fa-solid fa-shield-halved" title="Secure E2EE"></i>
-        <i class="fa-solid fa-bell" style="cursor:pointer;" onclick="toggleNotificationSound()"></i>
+        <i class="fa-solid fa-users" style="cursor:pointer;" title="Create Group" onclick="openModal('create-group-modal')"></i>
+        <i class="fa-solid fa-moon" id="theme-icon" style="cursor:pointer;" title="Toggle Theme" onclick="toggleAppTheme()"></i>
+        <i class="fa-solid fa-bell" style="cursor:pointer;" title="Toggle Sound" onclick="toggleNotificationSound()"></i>
       </div>
     </div>
 
@@ -216,7 +214,7 @@
         <input type="text" placeholder="Search chats..." id="chat-filter-input" oninput="filterChatsList(this.value)" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); font-size:0.85rem; outline:none;">
       </div>
       <div id="chats-list-container" style="flex:1;">
-        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No accepted chats yet. Go to Search tab to find friends!</p>
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No chats yet. Go to Search or create a Group!</p>
       </div>
     </div>
 
@@ -243,7 +241,7 @@
     <!-- PANE 4: GALLERY / MEDIA HUB -->
     <div id="pane-gallery" class="pane-content hidden" style="padding: 16px;">
       <h4 style="margin-bottom: 12px; font-size: 0.95rem;"><i class="fa-solid fa-photo-film"></i> Media & Files Hub</h4>
-      <p style="font-size: 0.8rem; color: var(--text-muted);">All shared photos and documents across your secure chats will appear here.</p>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">All shared photos and documents across your chats will appear here.</p>
       <div id="shared-media-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-top:15px;">
         <div style="background:var(--card-bg); padding:20px; border-radius:10px; text-align:center; color:var(--text-muted); font-size:0.75rem;">No media shared yet</div>
       </div>
@@ -260,11 +258,18 @@
         <p><i class="fa-solid fa-lock" style="color:var(--primary);"></i> <strong>Security:</strong> End-to-End Encrypted</p>
         <p style="margin-top: 8px;"><i class="fa-solid fa-building" style="color:var(--primary);"></i> <strong>Agency:</strong> Prime Solutions</p>
         <p style="margin-top: 8px;"><i class="fa-solid fa-code" style="color:var(--primary);"></i> <strong>Developer:</strong> Muhammad Nazim</p>
+        <div style="margin-top: 12px;">
+          <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">Chat Wallpaper Theme</label>
+          <select id="wallpaper-select" onchange="changeWallpaper(this.value)" style="width:100%; padding:6px; border-radius:6px; background:var(--sidebar-bg); color:var(--text-main); border:1px solid var(--border-color); font-size:0.8rem;">
+            <option value="default">Default Dark Grid</option>
+            <option value="clean">Clean Minimalist</option>
+          </select>
+        </div>
       </div>
       <button class="btn btn-danger" onclick="signOutUser()">Log Out</button>
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (FIXED VISIBLE) -->
+    <!-- BOTTOM NAVIGATION BAR -->
     <div class="app-bottom-nav">
       <div class="nav-item active" id="nav-chats" onclick="switchNavTab('chats')">
         <i class="fa-solid fa-message"></i>
@@ -288,7 +293,7 @@
       </div>
     </div>
 
-    <!-- FULLSCREEN CHAT SCREEN OVERLAY -->
+    <!-- CHAT SCREEN OVERLAY -->
     <div id="chat-screen-pane" class="chat-screen hidden">
       <div class="chat-screen-header">
         <i class="fa-solid fa-arrow-left" style="cursor:pointer; font-size:1.1rem;" onclick="closeActiveChat()"></i>
@@ -300,14 +305,15 @@
           <h4 id="active-chat-name" style="font-size: 0.95rem;">Chat Name</h4>
           <span id="active-chat-status" style="font-size: 0.7rem; color: var(--text-muted);">offline</span>
         </div>
-        <div style="display:flex; gap:12px; color:var(--text-muted); font-size:1.1rem;">
-          <i class="fa-solid fa-phone" style="cursor:pointer;" onclick="alert('Voice call simulation...')"></i>
-          <i class="fa-solid fa-video" style="cursor:pointer;" onclick="alert('Video call simulation...')"></i>
-        </div>
       </div>
 
       <div class="messages-box" id="messages-container">
         <!-- Messages -->
+      </div>
+
+      <!-- Typing Indicator Footer Notice -->
+      <div id="typing-indicator-bar" style="padding: 4px 16px; font-size: 0.75rem; color: var(--primary); background: var(--card-bg); display: none;">
+        <span>Typing...</span>
       </div>
 
       <div id="emoji-picker-box" class="emoji-picker hidden">
@@ -325,7 +331,7 @@
         <button class="action-icon-btn" onclick="toggleEmojiPicker()"><i class="fa-solid fa-face-smile"></i></button>
         <button class="action-icon-btn" onclick="document.getElementById('media-file-input').click()"><i class="fa-solid fa-paperclip"></i></button>
         <button class="action-icon-btn" id="voice-record-btn" onclick="toggleVoiceRecording()"><i class="fa-solid fa-microphone"></i></button>
-        <input type="text" class="input-field" id="message-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+        <input type="text" class="input-field" id="message-input" placeholder="Type a message..." oninput="handleTypingInput()" onkeypress="handleKeyPress(event)">
         <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>
@@ -336,7 +342,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, push, onValue, set, get, onDisconnect, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, set, get, onDisconnect, serverTimestamp, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdthYAmw8h_buzaeijMzzoUkZI-fKnvBY",
@@ -355,9 +361,12 @@
     const googleProvider = new GoogleAuthProvider();
 
     let currentUser = null, currentUserProfile = null;
-    let activeChatUser = null;
+    let activeChatRoom = null; // { id, name, isGroup }
     let mediaRecorder = null, audioChunks = [];
-    let isRecording = false, soundEnabled = true;
+    let isRecording = false, soundEnabled = true, typingTimeout = null;
+
+    window.openModal = id => document.getElementById(id).classList.remove('hidden');
+    window.closeModal = id => document.getElementById(id).classList.add('hidden');
 
     window.toggleAppTheme = function() {
       const root = document.documentElement;
@@ -374,6 +383,14 @@
     window.toggleNotificationSound = function() {
       soundEnabled = !soundEnabled;
       alert(soundEnabled ? '🔔 Notification sounds enabled.' : '🔕 Notification sounds muted.');
+    };
+
+    window.changeWallpaper = function(val) {
+      if(val === 'clean') {
+        document.documentElement.style.setProperty('--chat-wallpaper', 'none');
+      } else {
+        document.documentElement.style.setProperty('--chat-wallpaper', 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0)');
+      }
     };
 
     window.toggleEmojiPicker = function() {
@@ -411,7 +428,7 @@
           document.getElementById('profile-page-avatar').innerText = currentUserProfile.name.substring(0, 2).toUpperCase();
 
           setupPresence();
-          loadAcceptedChats();
+          loadChatsAndGroups();
           loadIncomingRequests();
         } else {
           document.getElementById('auth-overlay').classList.add('hidden');
@@ -462,6 +479,29 @@
       location.reload();
     });
 
+    // Create Group Form Handler
+    document.getElementById('create-group-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const groupName = document.getElementById('group-name-input').value.trim();
+      if(!groupName) return;
+
+      const groupRef = push(ref(db, 'groups/'));
+      await set(groupRef, {
+        id: groupRef.key,
+        name: groupName,
+        creatorUid: currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+
+      // Add creator to group members
+      await set(ref(db, `group_members/${groupRef.key}/${currentUser.uid}`), { name: currentUserProfile.name });
+
+      alert(`Group "${groupName}" created successfully!`);
+      document.getElementById('group-name-input').value = '';
+      closeModal('create-group-modal');
+      switchNavTab('chats');
+    });
+
     window.signOutUser = async () => {
       await set(ref(db, `status/${currentUser.uid}`), { state: 'offline', lastChanged: serverTimestamp() });
       signOut(auth).then(() => location.reload());
@@ -470,7 +510,7 @@
     window.searchUsersDatabase = async (keyword) => {
       keyword = keyword.toLowerCase().trim();
       const container = document.getElementById('search-results-container');
-      if(!keyword) { container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:30px;">Type username...</p>'; return; }
+      if(!keyword) { container.innerHTML = '<p style="font-size:0.80rem; color:var(--text-muted); text-align:center; padding:30px;">Type username...</p>'; return; }
 
       const snap = await get(ref(db, 'users/'));
       container.innerHTML = '';
@@ -490,7 +530,7 @@
               </div>`;
           }
         });
-        if(!found) container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:30px;">No users found.</p>';
+        if(!found) container.innerHTML = '<p style="font-size:0.80rem; color:var(--text-muted); text-align:center; padding:30px;">No users found.</p>';
       }
     };
 
@@ -522,7 +562,7 @@
               </div>`;
           });
         } else {
-          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No pending requests.</p>';
+          container.innerHTML = '<p style="font-size:0.80rem; color:var(--text-muted); text-align:center; padding:40px;">No pending requests.</p>';
         }
       });
     }
@@ -540,15 +580,17 @@
       alert('Request rejected.');
     };
 
-    function loadAcceptedChats() {
+    function loadChatsAndGroups() {
+      const container = document.getElementById('chats-list-container');
+      container.innerHTML = '';
+
+      // Load Direct Accepted Chats
       onValue(ref(db, `accepted_chats/${currentUser.uid}`), snap => {
         const data = snap.val();
-        const container = document.getElementById('chats-list-container');
-        container.innerHTML = '';
         if(data) {
           Object.values(data).forEach(c => {
             container.innerHTML += `
-              <div class="chat-item" onclick="openActiveChat('${c.uid}', '${c.name}', '${c.username}')">
+              <div class="chat-item" onclick="openActiveChat('${c.uid}', '${c.name}', false)">
                 <div class="avatar" style="background: #25d366;">
                   ${c.name.substring(0,2).toUpperCase()}
                   <div id="chat-dot-${c.uid}" class="online-dot offline-dot"></div>
@@ -568,8 +610,25 @@
               }
             });
           });
-        } else {
-          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No accepted chats yet. Go to Search tab!</p>';
+        }
+      });
+
+      // Load Groups
+      onValue(ref(db, 'groups/'), snap => {
+        const groups = snap.val();
+        if(groups) {
+          Object.values(groups).forEach(g => {
+            container.innerHTML += `
+              <div class="chat-item" onclick="openActiveChat('${g.id}', '${g.name}', true)">
+                <div class="avatar" style="background: #8b5cf6;">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+                <div style="flex:1;">
+                  <div style="font-size:0.95rem; font-weight:600;">${g.name} <span style="font-size:0.7rem; background:rgba(139,92,246,0.2); color:#8b5cf6; padding:2px 6px; border-radius:4px;">Group</span></div>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">Group Chat Room</div>
+                </div>
+              </div>`;
+          });
         }
       });
     }
@@ -584,29 +643,46 @@
       });
     };
 
-    window.openActiveChat = (uid, name, username) => {
-      activeChatUser = { uid, name, username };
+    window.openActiveChat = (id, name, isGroup) => {
+      activeChatRoom = { id, name, isGroup };
       document.getElementById('active-chat-name').innerText = name;
-      document.getElementById('active-chat-status').innerText = `@${username}`;
-      document.getElementById('active-chat-avatar').innerHTML = `${name.substring(0,2).toUpperCase()}<div id="active-dot" class="online-dot offline-dot"></div>`;
+      document.getElementById('active-chat-status').innerText = isGroup ? 'Group Chat Room' : `@${name}`;
+      document.getElementById('active-chat-avatar').innerHTML = isGroup ? '<i class="fa-solid fa-users"></i>' : `${name.substring(0,2).toUpperCase()}<div id="active-dot" class="online-dot offline-dot"></div>`;
 
-      onValue(ref(db, `status/${uid}`), sSnap => {
-        const sd = sSnap.val();
-        const dot = document.getElementById('active-dot');
-        if(dot) {
-          if(sd && sd.state === 'online') { dot.classList.remove('offline-dot'); document.getElementById('active-chat-status').innerText = 'Online'; }
-          else { dot.classList.add('offline-dot'); document.getElementById('active-chat-status').innerText = 'Offline'; }
-        }
-      });
+      if(!isGroup) {
+        onValue(ref(db, `status/${id}`), sSnap => {
+          const sd = sSnap.val();
+          const dot = document.getElementById('active-dot');
+          if(dot) {
+            if(sd && sd.state === 'online') { dot.classList.remove('offline-dot'); document.getElementById('active-chat-status').innerText = 'Online'; }
+            else { dot.classList.add('offline-dot'); document.getElementById('active-chat-status').innerText = 'Offline'; }
+          }
+        });
+      }
 
       document.getElementById('chat-screen-pane').classList.remove('hidden');
 
-      const roomId = currentUser.uid < uid ? `${currentUser.uid}_${uid}` : `${uid}_${currentUser.uid}`;
+      const roomId = isGroup ? id : (currentUser.uid < id ? `${currentUser.uid}_${id}` : `${id}_${currentUser.uid}`);
       const msgBox = document.getElementById('messages-container');
       const mediaGrid = document.getElementById('shared-media-grid');
       mediaGrid.innerHTML = '';
 
-      onValue(ref(db, `direct_messages/${roomId}`), snapshot => {
+      // Listen to Typing Indicator
+      const typingRef = ref(db, `typing/${roomId}`);
+      onValue(typingRef, snap => {
+        const typingData = snap.val();
+        const indicator = document.getElementById('typing-indicator-bar');
+        if(typingData && typingData.uid !== currentUser.uid && typingData.isTyping) {
+          indicator.style.display = 'block';
+          indicator.querySelector('span').innerText = `${typingData.name} is typing...`;
+        } else {
+          indicator.style.display = 'none';
+        }
+      });
+
+      // Listen to Messages
+      const msgEndpoint = isGroup ? `group_messages/${roomId}` : `direct_messages/${roomId}`;
+      onValue(ref(db, msgEndpoint), snapshot => {
         const data = snapshot.val();
         msgBox.innerHTML = '';
         if(data) {
@@ -615,7 +691,7 @@
             const timeStr = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const isMe = m.senderUid === currentUser.uid;
 
-            if(!isMe && !m.isRead) set(ref(db, `direct_messages/${roomId}/${key}/isRead`), true);
+            if(!isMe && !m.isRead && !isGroup) set(ref(db, `${msgEndpoint}/${key}/isRead`), true);
 
             let content = escapeHTML(m.text);
             if(m.type === 'image') {
@@ -625,34 +701,73 @@
               content = `<audio controls src="${m.mediaUrl}" style="width:200px; height:35px;"></audio>`;
             }
 
-            let ticks = isMe ? (m.isRead ? '<i class="fa-solid fa-check-double" style="color:#53bdeb;"></i>' : '<i class="fa-solid fa-check" style="color:var(--text-muted);"></i>') : '';
+            let senderNameHTML = (isGroup && !isMe) ? `<div style="font-size:0.7rem; color:var(--primary); font-weight:bold; margin-bottom:2px;">${escapeHTML(m.senderName || 'User')}</div>` : '';
+            let ticks = (!isGroup && isMe) ? (m.isRead ? '<i class="fa-solid fa-check-double" style="color:#53bdeb;"></i>' : '<i class="fa-solid fa-check" style="color:var(--text-muted);"></i>') : '';
 
-            msgBox.innerHTML += `<div class="message ${isMe ? 'outgoing' : 'incoming'}">${content}<span class="msg-time">${timeStr} ${ticks}</span></div>`;
+            // Reactions Render
+            let reactionsHTML = '';
+            if(m.reactions) {
+              reactionsHTML = `<div class="msg-reactions">`;
+              Object.values(m.reactions).forEach(emo => { reactionsHTML += `<span>${emo}</span>`; });
+              reactionsHTML += `</div>`;
+            }
+
+            msgBox.innerHTML += `
+              <div class="message ${isMe ? 'outgoing' : 'incoming'}" ondblclick="addReaction('${roomId}', '${key}', '${isGroup ? 'group_messages' : 'direct_messages'}')">
+                ${senderNameHTML}
+                ${content}
+                <span class="msg-time">${timeStr} ${ticks}</span>
+                ${reactionsHTML}
+              </div>`;
           });
           msgBox.scrollTop = msgBox.scrollHeight;
         } else {
-          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure chat opened with ${name}.</div>`;
+          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened. Double tap any message to react!</div>`;
         }
       });
     };
 
     window.closeActiveChat = () => { document.getElementById('chat-screen-pane').classList.add('hidden'); };
 
+    window.handleTypingInput = () => {
+      if(!activeChatRoom) return;
+      const roomId = activeChatRoom.isGroup ? activeChatRoom.id : (currentUser.uid < activeChatRoom.id ? `${currentUser.uid}_${activeChatRoom.id}` : `${activeChatRoom.id}_${currentUser.uid}`);
+      
+      set(ref(db, `typing/${roomId}`), { uid: currentUser.uid, name: currentUserProfile.name, isTyping: true });
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        set(ref(db, `typing/${roomId}`), { uid: currentUser.uid, name: currentUserProfile.name, isTyping: false });
+      }, 1500);
+    };
+
+    window.addReaction = async (roomId, msgKey, endpointType) => {
+      const emoji = prompt("Choose reaction emoji (👍, ❤️, 😂, 🔥, 😮):", "👍");
+      if(!emoji) return;
+      await set(ref(db, `${endpointType}/${roomId}/${msgKey}/reactions/${currentUser.uid}`), emoji);
+    };
+
     window.sendMessage = () => {
       const input = document.getElementById('message-input');
       const text = input.value.trim();
-      if(!text || !activeChatUser) return;
+      if(!text || !activeChatRoom) return;
 
       sendMsgPayload({ text, type: 'text' });
       input.value = '';
     };
 
     function sendMsgPayload(payload) {
-      const roomId = currentUser.uid < activeChatUser.uid ? `${currentUser.uid}_${activeChatUser.uid}` : `${activeChatUser.uid}_${currentUser.uid}`;
-      push(ref(db, `direct_messages/${roomId}`), {
-        senderUid: currentUser.uid, receiverUid: activeChatUser.uid,
-        text: payload.text, type: payload.type || 'text', mediaUrl: payload.mediaUrl || '',
-        isRead: false, timestamp: serverTimestamp()
+      const roomId = activeChatRoom.isGroup ? activeChatRoom.id : (currentUser.uid < activeChatRoom.id ? `${currentUser.uid}_${activeChatRoom.id}` : `${activeChatRoom.id}_${currentUser.uid}`);
+      const endpoint = activeChatRoom.isGroup ? `group_messages/${roomId}` : `direct_messages/${roomId}`;
+
+      push(ref(db, endpoint), {
+        senderUid: currentUser.uid,
+        senderName: currentUserProfile.name,
+        receiverUid: activeChatRoom.isGroup ? '' : activeChatRoom.id,
+        text: payload.text,
+        type: payload.type || 'text',
+        mediaUrl: payload.mediaUrl || '',
+        isRead: false,
+        timestamp: serverTimestamp()
       });
     }
 
@@ -687,7 +802,7 @@
 
     window.handleFileSelected = (e) => {
       const file = e.target.files[0];
-      if(!file || !activeChatUser) return;
+      if(!file || !activeChatRoom) return;
       const reader = new FileReader();
       reader.onload = function(ev) {
         sendMsgPayload({ text: `📷 ${file.name}`, type: 'image', mediaUrl: ev.target.result });
