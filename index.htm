@@ -1,10 +1,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <title>PrimeTalk - Advanced Secure Messenger</title>
-  <meta name="description" content="Feature-packed secure E2EE messenger built by Prime Solutions.">
+  <title>PrimeTalk - Secure Messenger</title>
+  <meta name="description" content="Secure E2EE mobile-first messenger app built by Prime Solutions.">
   <meta name="author" content="Muhammad Nazim (Prime Solutions)">
   
   <link rel="manifest" href="manifest.json">
@@ -43,27 +43,29 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     
     html, body {
-      background-color: var(--bg-main);
+      background-color: var(--sidebar-bg);
       color: var(--text-main);
-      height: 100vh;
-      width: 100vw;
+      height: 100%;
+      width: 100%;
       overflow: hidden;
+      position: fixed;
     }
 
-    /* Responsive Fullscreen Layout */
+    /* True App-Like Layout */
     .app-container {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       background: var(--sidebar-bg);
       display: flex;
       flex-direction: column;
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
       overflow: hidden;
     }
 
-    /* Modal Overlay */
     .modal-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(11, 20, 26, 0.95); z-index: 9999;
       display: flex; justify-content: center; align-items: center; padding: 20px;
     }
@@ -85,18 +87,25 @@
 
     /* App Header */
     .app-header {
-      padding: 14px 16px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--border-color); z-index: 10;
+      height: 56px; padding: 0 16px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border-color); z-index: 10; flex-shrink: 0;
     }
-    .app-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .app-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
 
-    /* Main Panes */
-    .pane-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--sidebar-bg); }
+    /* Main Panes Container */
+    .pane-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      background: var(--sidebar-bg);
+      -webkit-overflow-scrolling: touch;
+    }
     
     .chat-item {
       display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); transition: background 0.2s;
     }
-    .chat-item:hover { background: var(--card-bg); }
+    .chat-item:active { background: var(--card-bg); }
     .avatar {
       width: 48px; height: 48px; border-radius: 50%; background: var(--primary);
       display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; flex-shrink: 0; position: relative; font-size: 1rem;
@@ -104,51 +113,59 @@
     .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--accent-badge); border-radius: 50%; border: 2px solid var(--sidebar-bg); }
     .offline-dot { background: var(--text-muted); }
 
-    /* Bottom Nav Bar */
+    /* Bottom App Navigation Bar (Fixed properly) */
     .app-bottom-nav {
-      height: 60px; background: var(--card-bg); display: flex; justify-content: space-around; align-items: center;
-      border-top: 1px solid var(--border-color); z-index: 10;
+      height: 60px;
+      background: var(--card-bg);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      z-index: 100;
+      flex-shrink: 0;
+      width: 100%;
     }
     .nav-item {
-      display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; font-weight: 600; flex: 1; transition: color 0.2s;
+      display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; font-weight: 600; flex: 1;
     }
     .nav-item i { font-size: 1.2rem; }
     .nav-item.active { color: var(--primary); }
 
-    /* Chat Screen Overlay */
+    /* Fullscreen Chat Screen Overlay */
     .chat-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--chat-bg);
-      z-index: 100; display: flex; flex-direction: column; transition: transform 0.3s ease;
+      z-index: 200; display: flex; flex-direction: column; transition: transform 0.25s ease-in-out;
     }
     .chat-screen.hidden { transform: translateX(100%); display: flex !important; pointer-events: none; }
     
     .chat-screen-header {
-      padding: 12px 16px; background: var(--card-bg); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color);
+      height: 56px; padding: 0 16px; background: var(--card-bg); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); flex-shrink: 0;
     }
     .messages-box {
       flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
       background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0); background-size: 24px 24px;
+      -webkit-overflow-scrolling: touch;
     }
-    .message { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; position: relative; word-break: break-word; color: var(--text-main); }
+    .message { max-width: 78%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; position: relative; word-break: break-word; color: var(--text-main); }
     .message.incoming { background: var(--msg-in); align-self: flex-start; border-top-left-radius: 0; }
     .message.outgoing { background: var(--msg-out); align-self: flex-end; border-top-right-radius: 0; }
     .msg-time { font-size: 0.65rem; color: var(--text-muted); float: right; margin-left: 8px; margin-top: 4px; display:flex; align-items:center; gap:2px; }
 
-    .chat-input-bar { padding: 10px 14px; background: var(--card-bg); display: flex; align-items: center; gap: 8px; }
+    .chat-input-bar { padding: 10px 12px; background: var(--card-bg); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .input-field {
       flex: 1; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 0.9rem; outline: none;
     }
-    .action-icon-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 6px; transition: color 0.2s; }
+    .action-icon-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 6px; }
     .action-icon-btn:hover { color: var(--primary); }
     .send-btn {
-      background: var(--primary); border: none; width: 38px; height: 38px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+      background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
     .recording-active { color: var(--danger) !important; animation: pulse 1s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
     .emoji-picker {
-      position: absolute; bottom: 65px; left: 10px; background: var(--card-bg); border: 1px solid var(--border-color);
-      border-radius: 12px; padding: 10px; display: flex; gap: 8px; font-size: 1.3rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 120;
+      position: absolute; bottom: 70px; left: 10px; background: var(--card-bg); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 10px; display: flex; gap: 8px; font-size: 1.3rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 220;
     }
   </style>
 </head>
@@ -180,25 +197,25 @@
     </div>
   </div>
 
-  <!-- Main App Container (Full Screen) -->
+  <!-- True Fullscreen Mobile App Container -->
   <div class="app-container" id="app-root-box">
     
     <!-- App Header -->
     <div class="app-header">
       <div class="app-title"><i class="fa-solid fa-comments"></i> PrimeTalk</div>
       <div style="display:flex; gap: 15px; color: var(--text-muted); align-items: center; font-size: 1.1rem;">
-        <i class="fa-solid fa-moon" id="theme-icon" style="cursor:pointer;" title="Toggle Theme" onclick="toggleAppTheme()"></i>
+        <i class="fa-solid fa-moon" id="theme-icon" style="cursor:pointer;" onclick="toggleAppTheme()"></i>
         <i class="fa-solid fa-shield-halved" title="Secure E2EE"></i>
-        <i class="fa-solid fa-bell" style="cursor:pointer;" title="Notifications" onclick="toggleNotificationSound()"></i>
+        <i class="fa-solid fa-bell" style="cursor:pointer;" onclick="toggleNotificationSound()"></i>
       </div>
     </div>
 
     <!-- PANE 1: CHATS LIST -->
     <div id="pane-chats" class="pane-content">
-      <div style="padding: 10px 16px; background: var(--sidebar-bg);">
+      <div style="padding: 10px 16px; background: var(--sidebar-bg); border-bottom: 1px solid var(--border-color);">
         <input type="text" placeholder="Search chats..." id="chat-filter-input" oninput="filterChatsList(this.value)" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); font-size:0.85rem; outline:none;">
       </div>
-      <div id="chats-list-container">
+      <div id="chats-list-container" style="flex:1;">
         <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No accepted chats yet. Go to Search tab to find friends!</p>
       </div>
     </div>
@@ -206,7 +223,7 @@
     <!-- PANE 2: FRIEND REQUESTS -->
     <div id="pane-requests" class="pane-content hidden">
       <div style="padding: 12px 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">Incoming Friend Requests</div>
-      <div id="requests-list-container">
+      <div id="requests-list-container" style="flex:1;">
         <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No pending requests.</p>
       </div>
     </div>
@@ -223,7 +240,7 @@
       </div>
     </div>
 
-    <!-- PANE 4: GALLERY / MEDIA SHARING TAB -->
+    <!-- PANE 4: GALLERY / MEDIA HUB -->
     <div id="pane-gallery" class="pane-content hidden" style="padding: 16px;">
       <h4 style="margin-bottom: 12px; font-size: 0.95rem;"><i class="fa-solid fa-photo-film"></i> Media & Files Hub</h4>
       <p style="font-size: 0.8rem; color: var(--text-muted);">All shared photos and documents across your secure chats will appear here.</p>
@@ -247,7 +264,7 @@
       <button class="btn btn-danger" onclick="signOutUser()">Log Out</button>
     </div>
 
-    <!-- BOTTOM APP NAVIGATION BAR -->
+    <!-- BOTTOM NAVIGATION BAR (FIXED VISIBLE) -->
     <div class="app-bottom-nav">
       <div class="nav-item active" id="nav-chats" onclick="switchNavTab('chats')">
         <i class="fa-solid fa-message"></i>
@@ -271,7 +288,7 @@
       </div>
     </div>
 
-    <!-- CHAT SCREEN OVERLAY -->
+    <!-- FULLSCREEN CHAT SCREEN OVERLAY -->
     <div id="chat-screen-pane" class="chat-screen hidden">
       <div class="chat-screen-header">
         <i class="fa-solid fa-arrow-left" style="cursor:pointer; font-size:1.1rem;" onclick="closeActiveChat()"></i>
@@ -284,8 +301,8 @@
           <span id="active-chat-status" style="font-size: 0.7rem; color: var(--text-muted);">offline</span>
         </div>
         <div style="display:flex; gap:12px; color:var(--text-muted); font-size:1.1rem;">
-          <i class="fa-solid fa-phone" style="cursor:pointer;" onclick="alert('Starting voice call simulation...')"></i>
-          <i class="fa-solid fa-video" style="cursor:pointer;" onclick="alert('Starting video call simulation...')"></i>
+          <i class="fa-solid fa-phone" style="cursor:pointer;" onclick="alert('Voice call simulation...')"></i>
+          <i class="fa-solid fa-video" style="cursor:pointer;" onclick="alert('Video call simulation...')"></i>
         </div>
       </div>
 
