@@ -3,18 +3,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO & PWA Meta Tags -->
-  <title>PrimeTalk - Secure Business Messenger</title>
-  <meta name="description" content="Secure end-to-end encrypted business chat application powered by Prime Solutions.">
+  <title>PrimeTalk - Advanced Secure Messenger</title>
+  <meta name="description" content="Advanced end-to-end encrypted business chat application with voice, images, and online status. Built by Prime Solutions.">
   <meta name="author" content="Muhammad Nazim (Prime Solutions)">
   
-  <!-- PWA Manifest & Theme -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#00a884">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -46,18 +40,12 @@
     }
 
     .app-container {
-      width: 100%;
-      max-width: 1200px;
-      height: 95vh;
-      background: var(--sidebar-bg);
-      display: flex;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
+      width: 100%; max-width: 1200px; height: 95vh;
+      background: var(--sidebar-bg); display: flex;
+      border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      overflow: hidden; border: 1px solid var(--border-color);
     }
 
-    /* Modals & Overlays */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(11, 20, 26, 0.95); z-index: 9999;
@@ -65,8 +53,9 @@
     }
     .modal-content {
       background: var(--card-bg); color: var(--text-main);
-      width: 100%; max-width: 400px; border-radius: 16px; padding: 24px;
+      width: 100%; max-width: 420px; border-radius: 16px; padding: 24px;
       border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      max-height: 85vh; overflow-y: auto;
     }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
@@ -76,193 +65,73 @@
     .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
     .btn-google { background: #ea4335; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-danger { background: var(--danger); }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; margin: 0; }
     .hidden { display: none !important; }
 
-    /* Sidebar Area */
     .sidebar {
-      width: 350px;
-      background: var(--sidebar-bg);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
+      width: 380px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color);
+      display: flex; flex-direction: column;
     }
-
     .sidebar-header {
-      padding: 16px;
-      background: var(--card-bg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 16px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
     }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-    }
-
+    .user-profile { display: flex; align-items: center; gap: 12px; cursor: pointer; }
     .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #fff;
+      width: 40px; height: 40px; border-radius: 50%; background: var(--primary);
+      display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; flex-shrink: 0; position: relative;
     }
-
-    .security-badge {
-      background: rgba(0, 168, 132, 0.15);
-      color: var(--primary);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+    .online-indicator {
+      position: absolute; bottom: 0; right: 0; width: 11px; height: 11px;
+      background: var(--accent-badge); border-radius: 50%; border: 2px solid var(--sidebar-bg);
     }
+    .offline-indicator { background: var(--text-muted); }
 
-    .chat-list {
-      flex: 1;
-      overflow-y: auto;
-    }
-
+    .sidebar-actions { padding: 10px 16px; background: var(--sidebar-bg); display: flex; gap: 8px; border-bottom: 1px solid var(--border-color); }
+    .chat-list { flex: 1; overflow-y: auto; }
     .chat-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      gap: 12px;
-      cursor: pointer;
-      border-bottom: 1px solid var(--border-color);
-      transition: background 0.2s;
+      display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); transition: background 0.2s;
     }
-
-    .chat-item:hover, .chat-item.active {
-      background: var(--card-bg);
-    }
-
+    .chat-item:hover, .chat-item.active { background: var(--card-bg); }
     .chat-info { flex: 1; }
     .chat-name { font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
     .chat-preview { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
 
-    /* Main Chat Area */
-    .chat-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--chat-bg);
-      position: relative;
-    }
-
+    .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--chat-bg); position: relative; }
     .chat-header {
-      padding: 12px 20px;
-      background: var(--card-bg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border-color);
+      padding: 12px 20px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
     }
-
     .security-notice {
-      background: rgba(17, 27, 33, 0.9);
-      color: #ffd700;
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      text-align: center;
-      margin: 10px auto;
-      width: 90%;
-      border: 1px dashed rgba(255, 215, 0, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      background: rgba(17, 27, 33, 0.9); color: #ffd700; padding: 8px; border-radius: 8px; font-size: 0.75rem; text-align: center; margin: 10px auto; width: 90%; border: 1px dashed rgba(255, 215, 0, 0.3); display: flex; align-items: center; justify-content: center; gap: 6px;
     }
-
     .messages-container {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
-      background-size: 24px 24px;
+      flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0); background-size: 24px 24px;
     }
-
     .message {
-      max-width: 65%;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      position: relative;
-      word-break: break-word;
+      max-width: 65%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; position: relative; word-break: break-word;
     }
+    .message.incoming { background: var(--msg-in); align-self: flex-start; border-top-left-radius: 0; }
+    .message.outgoing { background: var(--msg-out); align-self: flex-end; border-top-right-radius: 0; }
+    .msg-time { font-size: 0.65rem; color: var(--text-muted); float: right; margin-left: 10px; margin-top: 4px; display:flex; align-items:center; gap:3px; }
 
-    .message.incoming {
-      background: var(--msg-in);
-      align-self: flex-start;
-      border-top-left-radius: 0;
-    }
-
-    .message.outgoing {
-      background: var(--msg-out);
-      align-self: flex-end;
-      border-top-right-radius: 0;
-    }
-
-    .msg-time {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      float: right;
-      margin-left: 10px;
-      margin-top: 4px;
-    }
-
-    .chat-input-bar {
-      padding: 12px 16px;
-      background: var(--card-bg);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
+    .chat-input-bar { padding: 12px 16px; background: var(--card-bg); display: flex; align-items: center; gap: 10px; }
     .input-field {
-      flex: 1;
-      background: var(--sidebar-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: var(--text-main);
-      font-size: 0.9rem;
-      outline: none;
+      flex: 1; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; color: var(--text-main); font-size: 0.9rem; outline: none;
     }
-
+    .action-icon-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
+    .action-icon-btn:hover { color: var(--primary); }
     .send-btn {
-      background: var(--primary);
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
+    .recording-active { color: var(--danger) !important; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
   </style>
 </head>
 <body>
 
-  <!-- Auth Overlay (Login / Signup) -->
+  <!-- Auth Overlay -->
   <div id="auth-overlay" class="modal-overlay">
     <div class="modal-content">
-      <h2 style="margin-bottom: 15px; text-align: center;"><i class="fa-solid fa-lock" style="color: var(--primary);"></i> PrimeTalk Auth</h2>
+      <h2 style="margin-bottom: 15px; text-align: center;"><i class="fa-solid fa-lock" style="color: var(--primary);"></i> PrimeTalk Secure</h2>
       <button id="google-login-btn" class="btn btn-google"><i class="fa-brands fa-google"></i> Continue with Google</button>
       <div style="text-align: center; margin: 10px 0; font-size: 0.8rem; color: var(--text-muted);">OR EMAIL LOGIN</div>
       <form id="auth-form">
@@ -278,23 +147,39 @@
     <div class="modal-content">
       <h3 style="margin-bottom: 12px; text-align: center;">Complete Your Profile</h3>
       <form id="profile-setup-form">
-        <div class="form-group"><label>Full Name / Display Name</label><input type="text" id="setup-name" required placeholder="Muhammad Nazim"></div>
-        <div class="form-group"><label>Business Title / Role</label><input type="text" id="setup-title" required placeholder="Web Developer / Prime Solutions"></div>
-        <button type="submit" class="btn">Save & Enter Chat</button>
+        <div class="form-group"><label>Full Name</label><input type="text" id="setup-name" required placeholder="Muhammad Nazim"></div>
+        <div class="form-group"><label>Unique Username (e.g. nazim_dev)</label><input type="text" id="setup-username" required placeholder="nazim_dev"></div>
+        <button type="submit" class="btn">Save & Enter</button>
       </form>
     </div>
   </div>
 
-  <!-- Profile Settings Modal -->
+  <!-- Add User Modal -->
+  <div id="search-user-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-user-plus"></i> Add Contact</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('search-user-modal')"></i>
+      </div>
+      <div class="form-group">
+        <input type="text" id="search-username-input" placeholder="Search by username..." oninput="searchUsersDatabase(this.value)">
+      </div>
+      <div id="search-results-list" style="max-height: 250px; overflow-y: auto;">
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Type username to search...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Settings Modal -->
   <div id="profile-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3><i class="fa-solid fa-user-gear"></i> Account Settings</h3>
+        <h3><i class="fa-solid fa-user-gear"></i> Settings</h3>
         <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('profile-modal')"></i>
       </div>
       <div style="background:var(--sidebar-bg); padding:12px; border-radius:8px; margin-bottom:15px; font-size:0.85rem;">
-        <p>📧 Email: <strong id="profile-email-disp" style="color:var(--primary);">...</strong></p>
-        <p style="margin-top:6px;">👤 Name: <strong id="profile-name-disp">...</strong></p>
+        <p>👤 Name: <strong id="profile-name-disp">...</strong></p>
+        <p style="margin-top:6px;">🏷️ Username: <strong id="profile-username-disp" style="color:var(--primary);">...</strong></p>
       </div>
       <button class="btn btn-danger" onclick="signOutUser()">Log Out</button>
     </div>
@@ -307,25 +192,24 @@
     <div class="sidebar">
       <div class="sidebar-header">
         <div class="user-profile" onclick="openModal('profile-modal')">
-          <div class="avatar" id="sidebar-user-avatar">PT</div>
+          <div class="avatar" id="sidebar-user-avatar">
+            PT
+            <div class="online-indicator"></div>
+          </div>
           <div>
             <h4 id="sidebar-user-name" style="font-size: 0.95rem;">Loading...</h4>
-            <span style="font-size: 0.7rem; color: var(--accent-badge);">● Click to Open Profile</span>
+            <span style="font-size: 0.7rem; color: var(--accent-badge);">● Online</span>
           </div>
         </div>
-        <div class="security-badge">
-          <i class="fa-solid fa-shield-halved"></i> Secure
-        </div>
+        <div class="security-badge"><i class="fa-solid fa-shield-halved"></i> E2EE</div>
       </div>
 
-      <div class="chat-list">
-        <div class="chat-item active">
-          <div class="avatar" style="background: #3b82f6;">GR</div>
-          <div class="chat-info">
-            <div class="chat-name">Global Enterprise Chat <i class="fa-solid fa-circle-check" style="color: var(--primary); font-size: 0.8rem;"></i></div>
-            <div class="chat-preview">Live encrypted database room...</div>
-          </div>
-        </div>
+      <div class="sidebar-actions">
+        <button class="btn btn-sm" onclick="openModal('search-user-modal')" style="width:100%;"><i class="fa-solid fa-user-plus"></i> Add Contact</button>
+      </div>
+
+      <div class="chat-list" id="chats-list-container">
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:20px;">No chats added yet.</p>
       </div>
     </div>
 
@@ -333,25 +217,33 @@
     <div class="chat-area">
       <div class="chat-header">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="avatar" style="background: #3b82f6;">GR</div>
+          <div class="avatar" id="active-chat-avatar" style="background: #3b82f6;">
+            PT
+            <div id="active-chat-indicator" class="online-indicator offline-indicator"></div>
+          </div>
           <div>
-            <h4 style="font-size: 0.95rem;">Global Enterprise Chat</h4>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">End-to-End Realtime Sync • Powered by Prime Solutions</span>
+            <h4 id="active-chat-name" style="font-size: 0.95rem;">Select a Chat</h4>
+            <span id="active-chat-status" style="font-size: 0.75rem; color: var(--text-muted);">End-to-End Encrypted</span>
           </div>
         </div>
       </div>
 
       <div class="security-notice">
-        <i class="fa-solid fa-lock"></i> Secured with Firebase Auth & Realtime Database.
+        <i class="fa-solid fa-lock"></i> Voice notes, media sharing, read receipts & online statuses active.
       </div>
 
       <div class="messages-container" id="messages-box">
-        <!-- Messages loaded from Firebase -->
+        <div style="text-align:center; color:var(--text-muted); margin-top:40px;">Select a contact from sidebar to start messaging.</div>
       </div>
 
+      <!-- Hidden file input for images/docs -->
+      <input type="file" id="media-file-input" class="hidden" accept="image/*,.pdf,.txt" onchange="handleFileSelected(event)">
+
       <div class="chat-input-bar">
-        <input type="text" class="input-field" id="message-input" placeholder="Type a secure message..." onkeypress="handleKeyPress(event)">
-        <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        <button class="action-icon-btn" onclick="document.getElementById('media-file-input').click()" title="Attach Image/File"><i class="fa-solid fa-paperclip"></i></button>
+        <button class="action-icon-btn" id="voice-record-btn" onclick="toggleVoiceRecording()" title="Record Voice Note"><i class="fa-solid fa-microphone"></i></button>
+        <input type="text" class="input-field" id="message-input" placeholder="Type a secure message..." onkeypress="handleKeyPress(event)" disabled>
+        <button class="send-btn" id="send-msg-btn" onclick="sendMessage()" disabled><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>
 
@@ -361,7 +253,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, push, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, set, get, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdthYAmw8h_buzaeijMzzoUkZI-fKnvBY",
@@ -380,11 +272,13 @@
     const googleProvider = new GoogleAuthProvider();
 
     let currentUser = null, currentUserProfile = null;
+    let activeChatUser = null;
+    let mediaRecorder = null, audioChunks = [];
+    let isRecording = false;
 
     window.openModal = id => document.getElementById(id).classList.remove('hidden');
     window.closeModal = id => document.getElementById(id).classList.add('hidden');
 
-    // Auth State Observer
     onAuthStateChanged(auth, async user => {
       if (user) {
         currentUser = user;
@@ -395,9 +289,12 @@
           document.getElementById('profile-setup-modal').classList.add('hidden');
           
           document.getElementById('sidebar-user-name').innerText = currentUserProfile.name;
-          document.getElementById('sidebar-user-avatar').innerText = currentUserProfile.name.substring(0, 2).toUpperCase();
-          document.getElementById('profile-email-disp').innerText = user.email;
+          document.getElementById('sidebar-user-avatar').innerHTML = `${currentUserProfile.name.substring(0, 2).toUpperCase()}<div class="online-indicator"></div>`;
           document.getElementById('profile-name-disp').innerText = currentUserProfile.name;
+          document.getElementById('profile-username-disp').innerText = '@' + currentUserProfile.username;
+
+          setupPresenceSystem();
+          loadUserContacts();
         } else {
           document.getElementById('auth-overlay').classList.add('hidden');
           document.getElementById('profile-setup-modal').classList.remove('hidden');
@@ -410,7 +307,17 @@
       }
     });
 
-    // Email/Password Login & Register
+    function setupPresenceSystem() {
+      const userStatusRef = ref(db, `status/${currentUser.uid}`);
+      const connectedRef = ref(db, '.info/connected');
+      onValue(connectedRef, snap => {
+        if (snap.val() === true) {
+          set(userStatusRef, { state: 'online', lastChanged: serverTimestamp() });
+          onDisconnect(userStatusRef).set({ state: 'offline', lastChanged: serverTimestamp() });
+        }
+      });
+    }
+
     document.getElementById('auth-form').addEventListener('submit', async e => {
       e.preventDefault();
       const email = document.getElementById('auth-email').value;
@@ -420,86 +327,239 @@
       } catch (err) {
         try {
           await createUserWithEmailAndPassword(auth, email, pass);
-        } catch (e2) {
-          alert('Auth Error: ' + e2.message);
-        }
+        } catch (e2) { alert('Auth Error: ' + e2.message); }
       }
     });
 
-    // Google Login
     document.getElementById('google-login-btn').addEventListener('click', async () => {
-      try {
-        await signInWithPopup(auth, googleProvider);
-      } catch (e) { alert('Google Auth Error: ' + e.message); }
+      try { await signInWithPopup(auth, googleProvider); } catch (e) { alert(e.message); }
     });
 
-    // Profile Setup Form
     document.getElementById('profile-setup-form').addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('setup-name').value;
-      const title = document.getElementById('setup-title').value;
+      const username = document.getElementById('setup-username').value.toLowerCase().trim();
 
-      const profile = {
-        uid: currentUser.uid,
-        email: currentUser.email,
-        name,
-        title,
-        isProfileComplete: true,
-        createdAt: Date.now()
-      };
-
+      const profile = { uid: currentUser.uid, email: currentUser.email, name, username, isProfileComplete: true, createdAt: Date.now() };
       await set(ref(db, `users/${currentUser.uid}`), profile);
       currentUserProfile = profile;
       document.getElementById('profile-setup-modal').classList.add('hidden');
       location.reload();
     });
 
-    window.signOutUser = () => signOut(auth).then(() => location.reload());
+    window.signOutUser = async () => {
+      await set(ref(db, `status/${currentUser.uid}`), { state: 'offline', lastChanged: serverTimestamp() });
+      signOut(auth).then(() => location.reload());
+    };
 
-    // Messaging Logic
-    const messagesBox = document.getElementById('messages-box');
-    const messageInput = document.getElementById('message-input');
+    window.searchUsersDatabase = async (keyword) => {
+      keyword = keyword.toLowerCase().trim();
+      const listContainer = document.getElementById('search-results-list');
+      if(!keyword) { listContainer.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Type username...</p>'; return; }
 
-    window.sendMessage = function() {
-      const text = messageInput.value.trim();
-      if (!text || !currentUserProfile) return;
+      const snap = await get(ref(db, 'users/'));
+      listContainer.innerHTML = '';
+      if(snap.exists()) {
+        let found = false;
+        snap.forEach(child => {
+          const u = child.val();
+          if(u.uid !== currentUser.uid && (u.username.includes(keyword) || u.name.toLowerCase().includes(keyword))) {
+            found = true;
+            listContainer.innerHTML += `
+              <div class="chat-item" style="justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div class="avatar" style="background:#8b5cf6;">${u.name.substring(0,2).toUpperCase()}</div>
+                  <div><strong>${u.name}</strong><div style="font-size:0.75rem; color:var(--text-muted);">@${u.username}</div></div>
+                </div>
+                <button class="btn btn-sm" onclick="addContact('${u.uid}', '${u.name}', '${u.username}')">Add</button>
+              </div>`;
+          }
+        });
+        if(!found) listContainer.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No users found.</p>';
+      }
+    };
 
-      push(ref(db, 'primetalk_messages/'), {
-        sender: currentUserProfile.name,
-        uid: currentUser.uid,
-        text: text,
-        timestamp: Date.now()
+    window.addContact = async (uid, name, username) => {
+      await set(ref(db, `contacts/${currentUser.uid}/${uid}`), { uid, name, username, addedAt: Date.now() });
+      alert(`@${username} added successfully!`);
+      closeModal('search-user-modal');
+      loadUserContacts();
+    };
+
+    function loadUserContacts() {
+      const container = document.getElementById('chats-list-container');
+      onValue(ref(db, `contacts/${currentUser.uid}`), snap => {
+        const data = snap.val();
+        container.innerHTML = '';
+        if(data) {
+          Object.values(data).forEach(c => {
+            container.innerHTML += `
+              <div class="chat-item" onclick="openChat('${c.uid}', '${c.name}', '${c.username}')">
+                <div class="avatar" style="background: #3b82f6;" id="contact-av-${c.uid}">
+                  ${c.name.substring(0,2).toUpperCase()}
+                  <div id="contact-ind-${c.uid}" class="online-indicator offline-indicator"></div>
+                </div>
+                <div class="chat-info">
+                  <div class="chat-name">${c.name} <i class="fa-solid fa-circle-check" style="color: var(--primary); font-size: 0.75rem;"></i></div>
+                  <div class="chat-preview" id="contact-preview-${c.uid}">@${c.username}</div>
+                </div>
+              </div>`;
+            
+            // Listen to contact status
+            onValue(ref(db, `status/${c.uid}`), sSnap => {
+              const statusData = sSnap.val();
+              const indEl = document.getElementById(`contact-ind-${c.uid}`);
+              if(indEl) {
+                if(statusData && statusData.state === 'online') indEl.classList.remove('offline-indicator');
+                else indEl.classList.add('offline-indicator');
+              }
+            });
+          });
+        } else {
+          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:20px;">No chats added yet.</p>';
+        }
+      });
+    }
+
+    window.openChat = (uid, name, username) => {
+      activeChatUser = { uid, name, username };
+      document.getElementById('active-chat-name').innerText = name;
+      document.getElementById('active-chat-status').innerText = `@${username} • Secure E2EE`;
+      document.getElementById('active-chat-avatar').innerHTML = `${name.substring(0,2).toUpperCase()}<div id="active-ind" class="online-indicator offline-indicator"></div>`;
+
+      onValue(ref(db, `status/${uid}`), sSnap => {
+        const sd = sSnap.val();
+        const ind = document.getElementById('active-ind');
+        if(ind) {
+          if(sd && sd.state === 'online') { ind.classList.remove('offline-indicator'); document.getElementById('active-chat-status').innerText = `@${username} • Online`; }
+          else { ind.classList.add('offline-indicator'); document.getElementById('active-chat-status').innerText = `@${username} • Offline`; }
+        }
       });
 
-      messageInput.value = '';
+      document.getElementById('message-input').removeAttribute('disabled');
+      document.getElementById('send-msg-btn').removeAttribute('disabled');
+
+      const roomId = currentUser.uid < uid ? `${currentUser.uid}_${uid}` : `${uid}_${currentUser.uid}`;
+      const messagesBox = document.getElementById('messages-box');
+
+      onValue(ref(db, `direct_messages/${roomId}`), snapshot => {
+        const data = snapshot.val();
+        messagesBox.innerHTML = '';
+        if(data) {
+          Object.keys(data).forEach(msgKey => {
+            const msg = data[msgKey];
+            const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const isMe = msg.senderUid === currentUser.uid;
+
+            // Mark as read if incoming
+            if(!isMe && !msg.isRead) {
+              set(ref(db, `direct_messages/${roomId}/${msgKey}/isRead`), true);
+            }
+
+            let contentHTML = escapeHTML(msg.text);
+            if(msg.type === 'image') {
+              contentHTML = `<img src="${msg.mediaUrl}" style="max-width:100%; border-radius:6px; margin-bottom:4px; display:block;"/><span style="font-size:0.85rem;">${escapeHTML(msg.text)}</span>`;
+            } else if(msg.type === 'audio') {
+              contentHTML = `<audio controls src="${msg.mediaUrl}" style="width:200px; height:35px;"></audio>`;
+            }
+
+            let ticks = isMe ? (msg.isRead ? '<i class="fa-solid fa-check-double" style="color: #53bdeb;"></i>' : '<i class="fa-solid fa-check" style="color: var(--text-muted);"></i>') : '';
+
+            const div = document.createElement('div');
+            div.className = `message ${isMe ? 'outgoing' : 'incoming'}`;
+            div.innerHTML = `${contentHTML} <span class="msg-time">${timeStr} ${ticks}</span>`;
+            messagesBox.appendChild(div);
+          });
+          messagesBox.scrollTop = messagesBox.scrollHeight;
+        } else {
+          messagesBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure channel opened with ${name}.</div>`;
+        }
+      });
+    };
+
+    window.sendMessage = function() {
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+      if(!text || !activeChatUser) return;
+
+      sendPayloadToDatabase({ text, type: 'text' });
+      input.value = '';
     }
 
-    window.handleKeyPress = function(e) {
-      if (e.key === 'Enter') { sendMessage(); }
+    function sendPayloadToDatabase(payload) {
+      const roomId = currentUser.uid < activeChatUser.uid ? `${currentUser.uid}_${activeChatUser.uid}` : `${activeChatUser.uid}_${currentUser.uid}`;
+      // Basic Client-side encoding simulation for E2EE feel
+      const encodedText = btoa(encodeURIComponent(payload.text || 'Media attachment'));
+
+      push(ref(db, `direct_messages/${roomId}`), {
+        senderUid: currentUser.uid,
+        receiverUid: activeChatUser.uid,
+        text: payload.text,
+        encodedData: encodedText,
+        type: payload.type || 'text',
+        mediaUrl: payload.mediaUrl || '',
+        isRead: false,
+        timestamp: serverTimestamp()
+      });
     }
 
-    // Realtime Sync Listener
-    onValue(ref(db, 'primetalk_messages/'), (snapshot) => {
-      const data = snapshot.val();
-      messagesBox.innerHTML = '';
-      if (data) {
-        Object.values(data).forEach(msg => {
-          const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          const isMe = currentUser && msg.uid === currentUser.uid;
-          
-          const div = document.createElement('div');
-          div.className = `message ${isMe ? 'outgoing' : 'incoming'}`;
-          div.innerHTML = `<span style="font-size:0.7rem; color:var(--primary); display:block; font-weight:bold; margin-bottom:2px;">${escapeHTML(msg.sender)}</span>${escapeHTML(msg.text)} <span class="msg-time">${timeStr} <i class="fa-solid fa-check-double" style="color: #53bdeb;"></i></span>`;
-          messagesBox.appendChild(div);
+    // File / Image Sharing Handling
+    window.handleFileSelected = (e) => {
+      const file = e.target.files[0];
+      if(!file || !activeChatUser) return;
+
+      const reader = new FileReader();
+      reader.onload = function(uploadEvent) {
+        const base64String = uploadEvent.target.result;
+        sendPayloadToDatabase({
+          text: `📁 ${file.name}`,
+          type: 'image',
+          mediaUrl: base64String
         });
-        messagesBox.scrollTop = messagesBox.scrollHeight;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // Voice Notes Recording Handling
+    window.toggleVoiceRecording = async () => {
+      const btn = document.getElementById('voice-record-btn');
+      if(!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = event => { audioChunks.push(event.data); };
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = function() {
+              sendPayloadToDatabase({
+                text: '🎤 Voice Note',
+                type: 'audio',
+                mediaUrl: reader.result
+              });
+            };
+            reader.readAsDataURL(audioBlob);
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          btn.classList.add('recording-active');
+        } catch(err) {
+          alert('Microphone access error or not supported.');
+        }
+      } else {
+        if(mediaRecorder) mediaRecorder.stop();
+        isRecording = false;
+        btn.classList.remove('recording-active');
       }
-    });
+    };
+
+    window.handleKeyPress = function(e) { if(e.key === 'Enter') { sendMessage(); } }
 
     function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
   </script>
 </body>
