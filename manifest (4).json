@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "description": "Ultimate enterprise secure E2EE messenger app with block list management, scheduled messages, voice speed controls, profile bios, and chat backup. Built by Prime Solutions.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "PrimeTalk",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "PrimeTalk",
+  "start_url": "/",
+  "theme_color": "#111b21"
+}
