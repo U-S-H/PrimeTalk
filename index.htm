@@ -3,8 +3,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <title>PrimeTalk - Ultimate Secure Messenger</title>
-  <meta name="description" content="Ultimate secure E2EE mobile-first messenger app with typing indicators, reactions, group chats, and custom wallpapers. Built by Prime Solutions.">
+  <title>PrimeTalk - Enterprise Secure Messenger</title>
+  <meta name="description" content="Ultimate enterprise secure E2EE messenger app with delete, block, unsend, and vanishing messages. Built by Prime Solutions.">
   <meta name="author" content="Muhammad Nazim (Prime Solutions)">
   
   <link rel="manifest" href="manifest.json">
@@ -129,7 +129,6 @@
     .message.outgoing { background: var(--msg-out); align-self: flex-end; border-top-right-radius: 0; }
     .msg-time { font-size: 0.65rem; color: var(--text-muted); float: right; margin-left: 8px; margin-top: 4px; display:flex; align-items:center; gap:2px; }
 
-    /* Message Reactions Tag */
     .msg-reactions {
       position: absolute; bottom: -10px; right: 8px; background: var(--card-bg); border: 1px solid var(--border-color);
       border-radius: 12px; padding: 2px 6px; font-size: 0.75rem; display: flex; gap: 3px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
@@ -189,7 +188,7 @@
         <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('create-group-modal')"></i>
       </div>
       <form id="create-group-form">
-        <div class="form-group"><label>Group Name</label><input type="text" id="group-name-input" required placeholder="Prime Solutions Team"></div>
+        <div class="form-group"><label>Group Name</label><input type="text" id="group-name-input" required placeholder="Prime Team"></div>
         <button type="submit" class="btn">Create Group</button>
       </form>
     </div>
@@ -305,6 +304,9 @@
           <h4 id="active-chat-name" style="font-size: 0.95rem;">Chat Name</h4>
           <span id="active-chat-status" style="font-size: 0.7rem; color: var(--text-muted);">offline</span>
         </div>
+        <div style="display:flex; gap:12px; color:var(--text-muted); font-size:1.1rem;">
+          <i class="fa-solid fa-ban" id="block-user-icon" style="cursor:pointer;" title="Block User" onclick="toggleBlockUser()"></i>
+        </div>
       </div>
 
       <div class="messages-box" id="messages-container">
@@ -361,7 +363,7 @@
     const googleProvider = new GoogleAuthProvider();
 
     let currentUser = null, currentUserProfile = null;
-    let activeChatRoom = null; // { id, name, isGroup }
+    let activeChatRoom = null;
     let mediaRecorder = null, audioChunks = [];
     let isRecording = false, soundEnabled = true, typingTimeout = null;
 
@@ -479,21 +481,13 @@
       location.reload();
     });
 
-    // Create Group Form Handler
     document.getElementById('create-group-form').addEventListener('submit', async e => {
       e.preventDefault();
       const groupName = document.getElementById('group-name-input').value.trim();
       if(!groupName) return;
 
       const groupRef = push(ref(db, 'groups/'));
-      await set(groupRef, {
-        id: groupRef.key,
-        name: groupName,
-        creatorUid: currentUser.uid,
-        createdAt: serverTimestamp()
-      });
-
-      // Add creator to group members
+      await set(groupRef, { id: groupRef.key, name: groupName, creatorUid: currentUser.uid, createdAt: serverTimestamp() });
       await set(ref(db, `group_members/${groupRef.key}/${currentUser.uid}`), { name: currentUserProfile.name });
 
       alert(`Group "${groupName}" created successfully!`);
@@ -584,7 +578,6 @@
       const container = document.getElementById('chats-list-container');
       container.innerHTML = '';
 
-      // Load Direct Accepted Chats
       onValue(ref(db, `accepted_chats/${currentUser.uid}`), snap => {
         const data = snap.val();
         if(data) {
@@ -613,16 +606,13 @@
         }
       });
 
-      // Load Groups
       onValue(ref(db, 'groups/'), snap => {
         const groups = snap.val();
         if(groups) {
           Object.values(groups).forEach(g => {
             container.innerHTML += `
               <div class="chat-item" onclick="openActiveChat('${g.id}', '${g.name}', true)">
-                <div class="avatar" style="background: #8b5cf6;">
-                  <i class="fa-solid fa-users"></i>
-                </div>
+                <div class="avatar" style="background: #8b5cf6;"><i class="fa-solid fa-users"></i></div>
                 <div style="flex:1;">
                   <div style="font-size:0.95rem; font-weight:600;">${g.name} <span style="font-size:0.7rem; background:rgba(139,92,246,0.2); color:#8b5cf6; padding:2px 6px; border-radius:4px;">Group</span></div>
                   <div style="font-size:0.8rem; color:var(--text-muted);">Group Chat Room</div>
@@ -635,30 +625,26 @@
 
     window.filterChatsList = function(keyword) {
       keyword = keyword.toLowerCase();
-      const items = document.querySelectorAll('#chats-list-container .chat-item');
-      items.forEach(item => {
-        const text = item.innerText.toLowerCase();
-        if(text.includes(keyword)) item.style.display = 'flex';
+      document.querySelectorAll('#chats-list-container .chat-item').forEach(item => {
+        if(item.innerText.toLowerCase().includes(keyword)) item.style.display = 'flex';
         else item.style.display = 'none';
       });
     };
 
-    window.openActiveChat = (id, name, isGroup) => {
+    window.openActiveChat = async (id, name, isGroup) => {
+      // Check if blocked
+      if(!isGroup) {
+        const blockSnap = await get(ref(db, `blocks/${currentUser.uid}/${id}`));
+        if(blockSnap.exists()) {
+          alert("You have blocked this user. Unblock them in settings to chat.");
+          return;
+        }
+      }
+
       activeChatRoom = { id, name, isGroup };
       document.getElementById('active-chat-name').innerText = name;
       document.getElementById('active-chat-status').innerText = isGroup ? 'Group Chat Room' : `@${name}`;
       document.getElementById('active-chat-avatar').innerHTML = isGroup ? '<i class="fa-solid fa-users"></i>' : `${name.substring(0,2).toUpperCase()}<div id="active-dot" class="online-dot offline-dot"></div>`;
-
-      if(!isGroup) {
-        onValue(ref(db, `status/${id}`), sSnap => {
-          const sd = sSnap.val();
-          const dot = document.getElementById('active-dot');
-          if(dot) {
-            if(sd && sd.state === 'online') { dot.classList.remove('offline-dot'); document.getElementById('active-chat-status').innerText = 'Online'; }
-            else { dot.classList.add('offline-dot'); document.getElementById('active-chat-status').innerText = 'Offline'; }
-          }
-        });
-      }
 
       document.getElementById('chat-screen-pane').classList.remove('hidden');
 
@@ -667,20 +653,17 @@
       const mediaGrid = document.getElementById('shared-media-grid');
       mediaGrid.innerHTML = '';
 
-      // Listen to Typing Indicator
-      const typingRef = ref(db, `typing/${roomId}`);
-      onValue(typingRef, snap => {
-        const typingData = snap.val();
+      onValue(ref(db, `typing/${roomId}`), snap => {
+        const td = snap.val();
         const indicator = document.getElementById('typing-indicator-bar');
-        if(typingData && typingData.uid !== currentUser.uid && typingData.isTyping) {
+        if(td && td.uid !== currentUser.uid && td.isTyping) {
           indicator.style.display = 'block';
-          indicator.querySelector('span').innerText = `${typingData.name} is typing...`;
+          indicator.querySelector('span').innerText = `${td.name} is typing...`;
         } else {
           indicator.style.display = 'none';
         }
       });
 
-      // Listen to Messages
       const msgEndpoint = isGroup ? `group_messages/${roomId}` : `direct_messages/${roomId}`;
       onValue(ref(db, msgEndpoint), snapshot => {
         const data = snapshot.val();
@@ -704,7 +687,6 @@
             let senderNameHTML = (isGroup && !isMe) ? `<div style="font-size:0.7rem; color:var(--primary); font-weight:bold; margin-bottom:2px;">${escapeHTML(m.senderName || 'User')}</div>` : '';
             let ticks = (!isGroup && isMe) ? (m.isRead ? '<i class="fa-solid fa-check-double" style="color:#53bdeb;"></i>' : '<i class="fa-solid fa-check" style="color:var(--text-muted);"></i>') : '';
 
-            // Reactions Render
             let reactionsHTML = '';
             if(m.reactions) {
               reactionsHTML = `<div class="msg-reactions">`;
@@ -713,7 +695,7 @@
             }
 
             msgBox.innerHTML += `
-              <div class="message ${isMe ? 'outgoing' : 'incoming'}" ondblclick="addReaction('${roomId}', '${key}', '${isGroup ? 'group_messages' : 'direct_messages'}')">
+              <div class="message ${isMe ? 'outgoing' : 'incoming'}" ondblclick="openMessageMenu('${roomId}', '${key}', '${isGroup ? 'group_messages' : 'direct_messages'}', ${isMe})">
                 ${senderNameHTML}
                 ${content}
                 <span class="msg-time">${timeStr} ${ticks}</span>
@@ -722,12 +704,45 @@
           });
           msgBox.scrollTop = msgBox.scrollHeight;
         } else {
-          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened. Double tap any message to react!</div>`;
+          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened. Double tap any message to edit/delete/react!</div>`;
         }
       });
     };
 
     window.closeActiveChat = () => { document.getElementById('chat-screen-pane').classList.add('hidden'); };
+
+    // Block/Unblock User
+    window.toggleBlockUser = async function() {
+      if(!activeChatRoom || activeChatRoom.isGroup) return;
+      const blockRef = ref(db, `blocks/${currentUser.uid}/${activeChatRoom.id}`);
+      const snap = await get(blockRef);
+      if(snap.exists()) {
+        await remove(blockRef);
+        alert(`@${activeChatRoom.name} unblocked successfully.`);
+      } else {
+        await set(blockRef, true);
+        alert(`@${activeChatRoom.name} has been blocked.`);
+        closeActiveChat();
+      }
+    };
+
+    // Message Management Menu (Delete, Edit, React)
+    window.openMessageMenu = async function(roomId, msgKey, endpointType, isMe) {
+      let options = "Choose Action:\n1. Add Reaction\n2. Delete for Me";
+      if(isMe) options += "\n3. Unsend / Delete for Everyone\n4. Edit Message";
+
+      const choice = prompt(options, "1");
+      if(choice === "1") {
+        const emoji = prompt("Choose reaction (👍, ❤️, 😂, 🔥, 😮):", "👍");
+        if(emoji) await set(ref(db, `${endpointType}/${roomId}/${msgKey}/reactions/${currentUser.uid}`), emoji);
+      } else if(choice === "2" || (choice === "3" && isMe)) {
+        await remove(ref(db, `${endpointType}/${roomId}/${msgKey}`));
+        alert('Message deleted.');
+      } else if(choice === "4" && isMe) {
+        const newText = prompt("Edit your message:", "");
+        if(newText) await update(ref(db, `${endpointType}/${roomId}/${msgKey}`), { text: newText + ' (edited)' });
+      }
+    };
 
     window.handleTypingInput = () => {
       if(!activeChatRoom) return;
@@ -738,12 +753,6 @@
       typingTimeout = setTimeout(() => {
         set(ref(db, `typing/${roomId}`), { uid: currentUser.uid, name: currentUserProfile.name, isTyping: false });
       }, 1500);
-    };
-
-    window.addReaction = async (roomId, msgKey, endpointType) => {
-      const emoji = prompt("Choose reaction emoji (👍, ❤️, 😂, 🔥, 😮):", "👍");
-      if(!emoji) return;
-      await set(ref(db, `${endpointType}/${roomId}/${msgKey}/reactions/${currentUser.uid}`), emoji);
     };
 
     window.sendMessage = () => {
