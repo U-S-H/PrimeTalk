@@ -1,0 +1,384 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO & Branding Meta Tags -->
+  <title>PrimeTalk - Secure Business Messenger</title>
+  <meta name="description" content="Secure end-to-end encrypted business chat application powered by Prime Solutions.">
+  <meta name="author" content="Muhammad Nazim (Prime Solutions)">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-main: #0b141a;
+      --sidebar-bg: #111b21;
+      --chat-bg: #0b141a;
+      --card-bg: #202c33;
+      --primary: #00a884;
+      --text-main: #e9edef;
+      --text-muted: #8696a0;
+      --msg-out: #005c4b;
+      --msg-in: #202c33;
+      --border-color: #222d34;
+      --accent-badge: #00d25b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    
+    body {
+      background-color: #090e11;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      height: 95vh;
+      background: var(--sidebar-bg);
+      display: flex;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Sidebar Area */
+    .sidebar {
+      width: 350px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      background: var(--card-bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .security-badge {
+      background: rgba(0, 168, 132, 0.15);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      gap: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s;
+    }
+
+    .chat-item:hover, .chat-item.active {
+      background: var(--card-bg);
+    }
+
+    .chat-info {
+      flex: 1;
+    }
+
+    .chat-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chat-preview {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Main Chat Area */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--chat-bg);
+      position: relative;
+    }
+
+    .chat-header {
+      padding: 12px 20px;
+      background: var(--card-bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .security-notice {
+      background: rgba(17, 27, 33, 0.9);
+      color: #ffd700;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      text-align: center;
+      margin: 10px auto;
+      width: 90%;
+      border: 1px dashed rgba(255, 215, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .messages-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    .message {
+      max-width: 65%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      position: relative;
+      word-break: break-word;
+    }
+
+    .message.incoming {
+      background: var(--msg-in);
+      align-self: flex-start;
+      border-top-left-radius: 0;
+    }
+
+    .message.outgoing {
+      background: var(--msg-out);
+      align-self: flex-end;
+      border-top-right-radius: 0;
+    }
+
+    .msg-time {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      float: right;
+      margin-left: 10px;
+      margin-top: 4px;
+    }
+
+    /* Chat Input Bar */
+    .chat-input-bar {
+      padding: 12px 16px;
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .action-btn:hover {
+      color: var(--primary);
+    }
+
+    .input-field {
+      flex: 1;
+      background: var(--sidebar-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .send-btn {
+      background: var(--primary);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container" id="app-box">
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="user-profile">
+          <div class="avatar">PT</div>
+          <div>
+            <h4 style="font-size: 0.95rem;">PrimeTalk</h4>
+            <span style="font-size: 0.7rem; color: var(--accent-badge);">● Live Connected</span>
+          </div>
+        </div>
+        <div class="security-badge">
+          <i class="fa-solid fa-lock"></i> Secure
+        </div>
+      </div>
+
+      <div class="chat-list">
+        <div class="chat-item active">
+          <div class="avatar" style="background: #3b82f6;">GR</div>
+          <div class="chat-info">
+            <div class="chat-name">Global General Chat <i class="fa-solid fa-circle-check" style="color: var(--primary); font-size: 0.8rem;"></i></div>
+            <div class="chat-preview">Real-time Firebase database chat room...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Chat Screen -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="avatar" style="background: #3b82f6;">GR</div>
+          <div>
+            <h4 style="font-size: 0.95rem;">Global General Chat</h4>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">End-to-End Realtime Sync • Powered by Prime Solutions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="security-notice">
+        <i class="fa-solid fa-shield-halved"></i> Connected to Firebase Realtime Database (primetalk-a7094).
+      </div>
+
+      <div class="messages-container" id="messages-box">
+        <!-- Messages loaded from Firebase -->
+      </div>
+
+      <div class="chat-input-bar">
+        <input type="text" class="input-field" id="message-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdthYAmw8h_buzaeijMzzoUkZI-fKnvBY",
+      authDomain: "primetalk-a7094.firebaseapp.com",
+      databaseURL: "https://primetalk-a7094-default-rtdb.firebaseio.com",
+      projectId: "primetalk-a7094",
+      storageBucket: "primetalk-a7094.firebasestorage.app",
+      messagingSenderId: "948772771243",
+      appId: "1:948772771243:web:1a2b49236bcf6958daaeee",
+      measurementId: "G-084V2CM9TY"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const messagesBox = document.getElementById('messages-box');
+    const messageInput = document.getElementById('message-input');
+
+    window.sendMessage = function() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      push(ref(db, 'primetalk_messages/'), {
+        sender: "Muhammad Nazim",
+        text: text,
+        timestamp: Date.now()
+      });
+
+      messageInput.value = '';
+    }
+
+    window.handleKeyPress = function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    // Realtime listener
+    onValue(ref(db, 'primetalk_messages/'), (snapshot) => {
+      const data = snapshot.val();
+      messagesBox.innerHTML = '';
+      if (data) {
+        Object.values(data).forEach(msg => {
+          const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const isMe = msg.sender === "Muhammad Nazim";
+          
+          const div = document.createElement('div');
+          div.className = `message ${isMe ? 'outgoing' : 'incoming'}`;
+          div.innerHTML = `${escapeHTML(msg.text)} <span class="msg-time">${timeStr} <i class="fa-solid fa-check-double" style="color: #53bdeb;"></i></span>`;
+          messagesBox.appendChild(div);
+        });
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+      }
+    });
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+        </html>
+        
