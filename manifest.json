@@ -1,25 +1,57 @@
 {
-  "background_color": "#ffffff",
-  "description": "Ultimate enterprise secure E2EE messenger app with block list management, scheduled messages, voice speed controls, profile bios, and chat backup. Built by Prime Solutions.",
+  "background_color": "#0b141a",
   "dir": "ltr",
   "display": "standalone",
-  "name": "PrimeTalk",
+  "name": "PrimeTalk Enterprise",
   "orientation": "any",
-  "scope": "/",
+  "scope": "./",
   "short_name": "PrimeTalk",
-  "start_url": "/",
-  "theme_color": "#111b21",
-  "id": "Primw.Talk",
+  "start_url": "./index.html",
+  "theme_color": "#0b141a",
+  "id": "primetalk.enterprise",
+  "description": "PrimeTalk Enterprise Secure Messenger and Video Conferencing Platform by Prime Solutions.",
+  "lang": "en",
+  "categories": [
+    "business",
+    "communication",
+    "productivity"
+  ],
   "icons": [
     {
-      "src": "icon-192x192.png",
+      "src": "192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Video Meeting",
+      "short_name": "Meeting",
+      "description": "Quickly start an enterprise video conference",
+      "url": "./index.html#meeting",
+      "icons": [
+        {
+          "src": "192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "View Secure Chats",
+      "short_name": "Chats",
+      "description": "Open your encrypted messages",
+      "url": "./index.html#chats",
+      "icons": [
+        {
+          "src": "192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
