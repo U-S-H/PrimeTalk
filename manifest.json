@@ -8,5 +8,18 @@
   "scope": "/",
   "short_name": "PrimeTalk",
   "start_url": "/",
-  "theme_color": "#111b21"
+  "theme_color": "#111b21",
+  "id": "Primw.Talk",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
