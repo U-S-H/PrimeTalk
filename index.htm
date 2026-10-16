@@ -286,6 +286,47 @@
     </div>
   </div>
 
+  <!-- Broadcast List Modal -->
+  <div id="broadcast-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-bullhorn"></i> New Broadcast Message</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('broadcast-modal')"></i>
+      </div>
+      <div class="form-group">
+        <label>Broadcast Message text</label>
+        <textarea id="broadcast-text-input" rows="3" placeholder="Type message to broadcast to all accepted chats..."></textarea>
+      </div>
+      <button class="btn" onclick="sendBroadcastMessage()">Send Broadcast</button>
+    </div>
+  </div>
+
+  <!-- Starred Messages Modal -->
+  <div id="starred-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Starred Messages</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('starred-modal')"></i>
+      </div>
+      <div id="starred-list-container" style="max-height: 250px; overflow-y: auto;">
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No starred messages yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archived Chats Modal -->
+  <div id="archived-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-box-archive"></i> Archived Chats</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('archived-modal')"></i>
+      </div>
+      <div id="archived-list-container" style="max-height: 250px; overflow-y: auto;">
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No archived chats.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Group Admin & Info Modal -->
   <div id="group-info-modal" class="modal-overlay hidden">
     <div class="modal-content">
@@ -382,6 +423,7 @@
     <div class="app-header">
       <div class="app-title"><i class="fa-solid fa-comments"></i> PrimeTalk</div>
       <div style="display:flex; gap: 15px; color: var(--text-muted); align-items: center; font-size: 1.1rem;">
+        <i class="fa-solid fa-bullhorn" style="cursor:pointer;" title="New Broadcast" onclick="openModal('broadcast-modal')"></i>
         <i class="fa-solid fa-users" style="cursor:pointer;" title="Create Group" onclick="openModal('create-group-modal')"></i>
         <i class="fa-solid fa-moon" id="theme-icon" style="cursor:pointer;" title="Toggle Theme" onclick="toggleAppTheme()"></i>
         <i class="fa-solid fa-bell" style="cursor:pointer;" title="Toggle Sound" onclick="toggleNotificationSound()"></i>
@@ -397,8 +439,12 @@
         </div>
       </div>
 
-      <div style="padding: 10px 16px; background: var(--sidebar-bg); border-bottom: 1px solid var(--border-color);">
+      <div style="padding: 10px 16px; background: var(--sidebar-bg); border-bottom: 1px solid var(--border-color); display:flex; gap:8px;">
         <input type="text" placeholder="Search chats..." id="chat-filter-input" oninput="filterChatsList(this.value)" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); font-size:0.85rem; outline:none;">
+      </div>
+      <div style="padding: 6px 16px; background:var(--sidebar-bg); display:flex; justify-content:space-between; font-size:0.8rem; color:var(--primary); border-bottom:1px solid var(--border-color);">
+        <span style="cursor:pointer;" onclick="openArchivedModal()"><i class="fa-solid fa-box-archive"></i> Archived Chats</span>
+        <span style="cursor:pointer;" onclick="openStarredModal()"><i class="fa-solid fa-star"></i> Starred Messages</span>
       </div>
       <div id="chats-list-container" style="flex:1;">
         <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:40px;">No secure chats yet. Go to Search or create a Group!</p>
@@ -524,6 +570,7 @@
           <span id="active-chat-status" style="font-size: 0.7rem; color: var(--text-muted);">offline</span>
         </div>
         <div style="display:flex; gap:10px; color:var(--text-muted); font-size:1.05rem;">
+          <i class="fa-solid fa-box-archive" style="cursor:pointer;" title="Archive Chat" onclick="toggleArchiveCurrentChat()"></i>
           <i class="fa-solid fa-square-check" style="cursor:pointer;" title="Create Kanban Task" onclick="promptCreateTask()"></i>
           <i class="fa-solid fa-file-invoice-dollar" style="cursor:pointer;" title="Split Bill / Invoice" onclick="promptSplitBill()"></i>
           <i class="fa-solid fa-box-archive" style="cursor:pointer;" title="Secure Cloud Vault" onclick="promptVaultFile()"></i>
@@ -1150,6 +1197,10 @@
           Object.values(data).forEach(async c => {
             const pinSnap = await get(ref(db, `pins/${currentUser.uid}/${c.uid}`));
             const isPinned = pinSnap.exists();
+            const archiveSnap = await get(ref(db, `archives/${currentUser.uid}/${c.uid}`));
+            const isArchived = archiveSnap.exists();
+
+            if(isArchived) return; // Skip archived from main chat list
             
             const friendUserSnap = await get(ref(db, `users/${c.uid}`));
             const friendData = friendUserSnap.exists() ? friendUserSnap.val() : {};
@@ -1201,6 +1252,90 @@
         }
       });
     }
+
+    // NEW FEATURES: Broadcast, Starred, Archive
+    window.sendBroadcastMessage = async function() {
+      const text = document.getElementById('broadcast-text-input').value.trim();
+      if(!text) return;
+      const snap = await get(ref(db, `accepted_chats/${currentUser.uid}`));
+      if(snap.exists()) {
+        const chats = snap.val();
+        Object.values(chats).forEach(c => {
+          const roomId = currentUser.uid < c.uid ? `${currentUser.uid}_${c.uid}` : `${c.uid}_${currentUser.uid}`;
+          push(ref(db, `direct_messages/${roomId}`), {
+            senderUid: currentUser.uid,
+            senderName: currentUserProfile.name,
+            receiverUid: c.uid,
+            text: `📢 [Broadcast] ${text}`,
+            type: 'text',
+            mediaUrl: '',
+            isRead: false,
+            timestamp: serverTimestamp()
+          });
+        });
+        alert('Broadcast message sent successfully to all chats!');
+        document.getElementById('broadcast-text-input').value = '';
+        closeModal('broadcast-modal');
+      } else {
+        alert('No contacts available for broadcast.');
+      }
+    };
+
+    window.openArchivedModal = async function() {
+      openModal('archived-modal');
+      const container = document.getElementById('archived-list-container');
+      container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Loading...</p>';
+      const snap = await get(ref(db, `archives/${currentUser.uid}`));
+      container.innerHTML = '';
+      if(snap.exists()) {
+        const archs = snap.val();
+        for(let uid of Object.keys(archs)) {
+          const uSnap = await get(ref(db, `users/${uid}`));
+          if(uSnap.exists()) {
+            const u = uSnap.val();
+            container.innerHTML += `
+              <div class="chat-item" style="justify-content:space-between;">
+                <div><strong>${u.name}</strong><div style="font-size:0.75rem; color:var(--text-muted);">@${u.username}</div></div>
+                <button class="btn btn-sm" onclick="unarchiveChat('${uid}')">Unarchive</button>
+              </div>`;
+          }
+        }
+      } else { container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No archived chats.</p>'; }
+    };
+
+    window.toggleArchiveCurrentChat = async function() {
+      if(!activeChatRoom || activeChatRoom.isGroup) return;
+      const archRef = ref(db, `archives/${currentUser.uid}/${activeChatRoom.id}`);
+      const snap = await get(archRef);
+      if(snap.exists()) { await remove(archRef); alert('Chat unarchived.'); }
+      else { await set(archRef, true); alert('Chat archived successfully.'); closeActiveChat(); }
+      loadChatsAndGroups();
+    };
+
+    window.unarchiveChat = async function(uid) {
+      await remove(ref(db, `archives/${currentUser.uid}/${uid}`));
+      alert('Chat unarchived!');
+      openArchivedModal();
+      loadChatsAndGroups();
+    };
+
+    window.openStarredModal = async function() {
+      openModal('starred-modal');
+      const container = document.getElementById('starred-list-container');
+      container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Loading...</p>';
+      const snap = await get(ref(db, `starred_messages/${currentUser.uid}`));
+      container.innerHTML = '';
+      if(snap.exists()) {
+        const starred = snap.val();
+        Object.values(starred).forEach(m => {
+          container.innerHTML += `
+            <div style="background:var(--sidebar-bg); padding:10px; border-radius:8px; margin-bottom:8px; border:1px solid var(--border-color);">
+              <div style="font-size:0.75rem; color:var(--primary); font-weight:bold;">${m.senderName}</div>
+              <div style="font-size:0.85rem;">${escapeHTML(m.text)}</div>
+            </div>`;
+        });
+      } else { container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No starred messages.</p>'; }
+    };
 
     window.filterChatsList = function(keyword) {
       keyword = keyword.toLowerCase();
@@ -1643,27 +1778,30 @@
     window.openMessageMenu = async function(roomId, msgKey, endpointType, isMe, encodedText, encodedSender) {
       const textVal = decodeURIComponent(encodedText);
       const senderVal = decodeURIComponent(encodedSender);
-      let options = "Choose Action:\n1. Add Reaction\n2. Reply to Message\n3. Pin Message\n4. Forward Message\n5. Delete for Me";
-      if(isMe) options += "\n6. Unsend / Delete for Everyone\n7. Edit Message";
+      let options = "Choose Action:\n1. Add Reaction\n2. Star Message\n3. Reply to Message\n4. Pin Message\n5. Forward Message\n6. Delete for Me";
+      if(isMe) options += "\n7. Unsend / Delete for Everyone\n8. Edit Message";
 
       const choice = prompt(options, "1");
       if(choice === "1") {
         const emoji = prompt("Choose reaction (👍, ❤️, 😂, 🔥, 😮):", "👍");
         if(emoji) await set(ref(db, `${endpointType}/${roomId}/${msgKey}/reactions/${currentUser.uid}`), emoji);
       } else if(choice === "2") {
+        await set(ref(db, `starred_messages/${currentUser.uid}/${msgKey}`), { text: textVal, senderName: senderVal, timestamp: Date.now() });
+        alert('Message starred successfully!');
+      } else if(choice === "3") {
         replyingToMsg = { senderName: senderVal, text: textVal };
         document.getElementById('reply-quote-text').innerText = `${senderVal}: ${textVal}`;
         document.getElementById('reply-preview-container').classList.remove('hidden');
-      } else if(choice === "3") {
+      } else if(choice === "4") {
         await set(ref(db, `pinned_message/${roomId}`), { text: textVal });
         alert('Message pinned to chat!');
-      } else if(choice === "4") {
+      } else if(choice === "5") {
         const targetUser = prompt("Enter recipient name to forward text:", "");
         if(targetUser) alert(`Message forwarded successfully to ${targetUser}!`);
-      } else if(choice === "5" || (choice === "6" && isMe)) {
+      } else if(choice === "6" || (choice === "7" && isMe)) {
         await remove(ref(db, `${endpointType}/${roomId}/${msgKey}`));
         alert('Message deleted.');
-      } else if(choice === "7" && isMe) {
+      } else if(choice === "8" && isMe) {
         const newText = prompt("Edit your message:", textVal);
         if(newText) await update(ref(db, `${endpointType}/${roomId}/${msgKey}`), { text: newText + ' (edited)' });
       }
