@@ -226,6 +226,19 @@
     <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="document.getElementById('global-broadcast-banner').classList.add('hidden')"></i>
   </div>
 
+  <!-- Forward Message Contact Selector Modal -->
+  <div id="forward-selector-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-share"></i> Forward Message to...</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('forward-selector-modal')"></i>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Select contact or group to forward:</p>
+      <div id="forward-contacts-list" style="max-height:250px; overflow-y:auto; margin-bottom:15px;"></div>
+      <button class="btn btn-sm btn-danger" style="width:100%;" onclick="closeModal('forward-selector-modal')">Cancel</button>
+    </div>
+  </div>
+
   <!-- Auth Overlay -->
   <div id="auth-overlay" class="modal-overlay">
     <div class="modal-content">
@@ -423,6 +436,7 @@
     <div class="app-header">
       <div class="app-title"><i class="fa-solid fa-comments"></i> PrimeTalk</div>
       <div style="display:flex; gap: 15px; color: var(--text-muted); align-items: center; font-size: 1.1rem;">
+        <i class="fa-solid fa-bell" style="cursor:pointer;" title="Enable FCM Notifications" onclick="requestFCMNotificationPermission()"></i>
         <i class="fa-solid fa-bullhorn" style="cursor:pointer;" title="New Broadcast" onclick="openModal('broadcast-modal')"></i>
         <i class="fa-solid fa-users" style="cursor:pointer;" title="Create Group" onclick="openModal('create-group-modal')"></i>
         <i class="fa-solid fa-moon" id="theme-icon" style="cursor:pointer;" title="Toggle Theme" onclick="toggleAppTheme()"></i>
@@ -570,11 +584,11 @@
           <span id="active-chat-status" style="font-size: 0.7rem; color: var(--text-muted);">offline</span>
         </div>
         <div style="display:flex; gap:10px; color:var(--text-muted); font-size:1.05rem;">
+          <i class="fa-solid fa-address-card" style="cursor:pointer;" title="Share Contact Card" onclick="shareContactCard()"></i>
           <i class="fa-solid fa-box-archive" style="cursor:pointer;" title="Archive Chat" onclick="toggleArchiveCurrentChat()"></i>
           <i class="fa-solid fa-square-check" style="cursor:pointer;" title="Create Kanban Task" onclick="promptCreateTask()"></i>
           <i class="fa-solid fa-file-invoice-dollar" style="cursor:pointer;" title="Split Bill / Invoice" onclick="promptSplitBill()"></i>
-          <i class="fa-solid fa-box-archive" style="cursor:pointer;" title="Secure Cloud Vault" onclick="promptVaultFile()"></i>
-          <i class="fa-solid fa-square-poll-vertical" style="cursor:pointer;" title="Create Poll" onclick="promptCreatePoll()"></i>
+          <i class="fa-solid fa-square-poll-vertical" style="cursor:pointer;" title="Create Interactive Poll" onclick="promptCreateInteractivePoll()"></i>
           <i class="fa-solid fa-calendar-days" style="cursor:pointer;" title="Schedule Meeting" onclick="promptScheduleMeeting()"></i>
           <i class="fa-solid fa-code" style="cursor:pointer;" title="Live Code / Whiteboard" onclick="openWhiteboardModal()"></i>
           <i class="fa-solid fa-location-dot" style="cursor:pointer;" title="Share Live GPS Location" onclick="sendLiveLocation()"></i>
@@ -683,6 +697,7 @@
     let replyingToMsg = null;
     let localStream = null, meetingRecorder = null, recordedBlobs = [];
     let isHandRaised = false, isCallMuted = false, isVideoOff = false;
+    let messageToForward = null;
 
     window.openModal = id => document.getElementById(id).classList.remove('hidden');
     window.closeModal = id => document.getElementById(id).classList.add('hidden');
@@ -710,6 +725,19 @@
     window.toggleNotificationSound = function() {
       soundEnabled = !soundEnabled;
       alert(soundEnabled ? '🔔 Notification sounds enabled.' : '🔕 Notification sounds muted.');
+    };
+
+    window.requestFCMNotificationPermission = async function() {
+      if (!('Notification' in window)) {
+        alert('This browser does not support desktop notifications.');
+        return;
+      }
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        alert('🔔 FCM Push Notifications enabled successfully!');
+      } else {
+        alert('Notification permission denied.');
+      }
     };
 
     window.changeWallpaper = function(val) {
@@ -1200,7 +1228,7 @@
             const archiveSnap = await get(ref(db, `archives/${currentUser.uid}/${c.uid}`));
             const isArchived = archiveSnap.exists();
 
-            if(isArchived) return; // Skip archived from main chat list
+            if(isArchived) return;
             
             const friendUserSnap = await get(ref(db, `users/${c.uid}`));
             const friendData = friendUserSnap.exists() ? friendUserSnap.val() : {};
@@ -1253,7 +1281,47 @@
       });
     }
 
-    // NEW FEATURES: Broadcast, Starred, Archive
+    // ADVANCED FORWARD MODAL & FEATURES
+    window.openForwardSelectorModal = async function(textVal) {
+      messageToForward = textVal;
+      openModal('forward-selector-modal');
+      const container = document.getElementById('forward-contacts-list');
+      container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Loading contacts...</p>';
+
+      const snap = await get(ref(db, `accepted_chats/${currentUser.uid}`));
+      container.innerHTML = '';
+      if(snap.exists()) {
+        const chats = snap.val();
+        Object.values(chats).forEach(c => {
+          container.innerHTML += `
+            <div class="chat-item" style="justify-content:space-between;" onclick="executeForwardMessage('${c.uid}', '${c.name}', false)">
+              <div><strong>${c.name}</strong><div style="font-size:0.75rem; color:var(--text-muted);">@${c.username}</div></div>
+              <button class="btn btn-sm">Forward</button>
+            </div>`;
+        });
+      } else {
+        container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No accepted chats found.</p>';
+      }
+    };
+
+    window.executeForwardMessage = async function(targetUid, targetName, isGroup) {
+      if(!messageToForward) return;
+      const roomId = currentUser.uid < targetUid ? `${currentUser.uid}_${targetUid}` : `${targetUid}_${currentUser.uid}`;
+      push(ref(db, `direct_messages/${roomId}`), {
+        senderUid: currentUser.uid,
+        senderName: currentUserProfile.name,
+        receiverUid: targetUid,
+        text: `↪️ [Forwarded] ${messageToForward}`,
+        type: 'text',
+        mediaUrl: '',
+        isRead: false,
+        timestamp: serverTimestamp()
+      });
+      alert(`Message successfully forwarded to ${targetName}!`);
+      closeModal('forward-selector-modal');
+      messageToForward = null;
+    };
+
     window.sendBroadcastMessage = async function() {
       const text = document.getElementById('broadcast-text-input').value.trim();
       if(!text) return;
@@ -1335,6 +1403,45 @@
             </div>`;
         });
       } else { container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">No starred messages.</p>'; }
+    };
+
+    window.shareContactCard = function() {
+      if(!activeChatRoom || activeChatRoom.isGroup) return;
+      sendMsgPayload({ 
+        text: `👤 [Contact Card]\nName: ${currentUserProfile.name}\nUsername: @${currentUserProfile.username}\nEmail:${currentUserProfile.email}`, 
+        type: 'text' 
+      });
+      alert('Your contact card shared to chat!');
+    };
+
+    window.promptCreateInteractivePoll = function() {
+      const q = prompt("Enter Poll Question:", "Project deadline agreement?");
+      if(!q) return;
+      const opt1 = prompt("Option 1:", "Yes, doable");
+      const opt2 = prompt("Option 2:", "Need more time");
+      if(!opt1 || !opt2) return;
+      
+      const pollData = `📊 [Interactive Poll]\nQ: ${q}\n1️⃣ ${opt1} (Votes: 0)\n2️⃣ ${opt2} (Votes: 0)`;
+      sendMsgPayload({ text: pollData, type: 'poll', pollOptions: [opt1, opt2], pollVotes: { 0: 0, 1: 0 } });
+    };
+
+    window.votePollOption = async function(roomId, msgKey, optionIndex, endpointType) {
+      const msgRef = ref(db, `${endpointType}/${roomId}/${msgKey}`);
+      const snap = await get(msgRef);
+      if(snap.exists()) {
+        const m = snap.val();
+        let votes = m.pollVotes || { 0: 0, 1: 0 };
+        votes[optionIndex] = (votes[optionIndex] || 0) + 1;
+        
+        const lines = m.text.split('\n');
+        let updatedText = `${lines[0]}\n${lines[1]}`;
+        const opts = m.pollOptions || ['Option 1', 'Option 2'];
+        updatedText += `\n1️⃣ ${opts[0]} (Votes:${votes[0]})`;
+        updatedText += `\n2️⃣ ${opts[1]} (Votes:${votes[1]})`;
+
+        await update(msgRef, { text: updatedText, pollVotes: votes });
+        alert('Vote recorded successfully!');
+      }
     };
 
     window.filterChatsList = function(keyword) {
@@ -1608,7 +1715,15 @@
             }
 
             let content = escapeHTML(m.text);
-            if(m.type === 'text' && (m.text.includes('http://') || m.text.includes('https://'))) {
+            if(m.type === 'poll') {
+              const opts = m.pollOptions || ['Option 1', 'Option 2'];
+              content = `
+                <div style="font-weight:600; margin-bottom:6px;"><i class="fa-solid fa-square-poll-vertical"></i> Interactive Poll</div>
+                <div style="font-size:0.85rem; margin-bottom:8px;">${escapeHTML(m.text.split('\n')[1] || '')}</div>
+                <button class="btn btn-sm" style="width:100%; margin-bottom:4px; background:var(--sidebar-bg); border:1px solid var(--border-color);" onclick="votePollOption('${roomId}', '${key}', 0, '${msgEndpoint}')">1️⃣ ${opts[0]}</button>
+                <button class="btn btn-sm" style="width:100%; background:var(--sidebar-bg); border:1px solid var(--border-color);" onclick="votePollOption('${roomId}', '${key}', 1, '${msgEndpoint}')">2️⃣ ${opts[1]}</button>
+              `;
+            } else if(m.type === 'text' && (m.text.includes('http://') || m.text.includes('https://'))) {
               const url = m.text.match(/(https?:\/\/[^\s]+)/g)[0];
               content = `${escapeHTML(m.text)}
                 <div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-color); padding:8px; border-radius:8px; margin-top:6px;">
@@ -1619,7 +1734,7 @@
               if(m.isViewOnce && !isMe && m.viewed) {
                 content = `<div style="font-style:italic; font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-eye-slash"></i> View Once media opened & destroyed</div>`;
               } else if(m.isViewOnce && !isMe && !m.viewed) {
-                content = `<button class="btn btn-sm" onclick="openViewOnceMedia('${roomId}', '${key}', '${m.mediaUrl}', '${msgEndpoint}')"><i class="fa-solid fa-eye"></i> Tap to View Once Photo</button>`;
+                content = `<button class="btn btn-sm" onclick="openViewOnceMedia('${roomId}', '${key}', '${m.mediaUrl}', '${msgEndpoint}')"><i class="fa-solid fa-eye"></i> Tap to View Once Photo ⏱️</button>`;
               } else {
                 content = `<img src="${m.mediaUrl}" onclick="openMediaLightbox('${m.mediaUrl}')" style="max-width:100%; border-radius:8px; display:block; margin-bottom:4px; cursor:pointer;"/><span style="font-size:0.85rem;">${escapeHTML(m.text)}</span>`;
                 mediaGrid.innerHTML += `<img src="${m.mediaUrl}" onclick="openMediaLightbox('${m.mediaUrl}')" style="width:100%; height:80px; object-fit:cover; border-radius:8px; cursor:pointer;" />`;
@@ -1637,9 +1752,10 @@
                 </div>`;
             } else if(m.type === 'audio') {
               content = `
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <audio controls src="${m.mediaUrl}" id="audio-${key}" style="width:170px; height:35px;"></audio>
-                  <button class="btn btn-sm" style="padding:4px 6px; font-size:0.7rem;" onclick="toggleAudioSpeed('${key}')">1x</button>
+                <div style="display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.2); padding:6px; border-radius:8px;">
+                  <i class="fa-solid fa-waveform-lines" style="color:var(--primary);"></i>
+                  <audio controls src="${m.mediaUrl}" id="audio-${key}" style="width:160px; height:32px;"></audio>
+                  <button class="btn btn-sm" style="padding:2px 4px; font-size:0.65rem;" onclick="toggleAudioSpeed('${key}')">1x</button>
                 </div>`;
             }
 
@@ -1796,8 +1912,7 @@
         await set(ref(db, `pinned_message/${roomId}`), { text: textVal });
         alert('Message pinned to chat!');
       } else if(choice === "5") {
-        const targetUser = prompt("Enter recipient name to forward text:", "");
-        if(targetUser) alert(`Message forwarded successfully to ${targetUser}!`);
+        openForwardSelectorModal(textVal);
       } else if(choice === "6" || (choice === "7" && isMe)) {
         await remove(ref(db, `${endpointType}/${roomId}/${msgKey}`));
         alert('Message deleted.');
@@ -1853,6 +1968,8 @@
         viewed: false,
         disappearingTimer: disappearingTimerSec,
         replyTo: replyingToMsg || null,
+        pollOptions: payload.pollOptions || null,
+        pollVotes: payload.pollVotes || null,
         isRead: false,
         timestamp: serverTimestamp()
       });
