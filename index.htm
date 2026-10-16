@@ -194,7 +194,7 @@
 
     .chat-input-bar { padding: 10px 12px; background: var(--sidebar-bg); backdrop-filter: blur(12px); display: flex; align-items: center; gap: 8px; flex-shrink: 0; border-top: 1px solid var(--border-color); }
     .input-field {
-      flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: box-shadow 0.3s;
+      flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: border-color 0.3s, box-shadow 0.3s;
     }
     .input-field:focus { box-shadow: 0 0 10px var(--primary-glow); }
     .action-icon-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 6px; transition: color 0.2s; }
@@ -897,23 +897,15 @@
       e.preventDefault();
       const email = document.getElementById('auth-email').value;
       const pass = document.getElementById('auth-password').value;
-      try { 
-        await signInWithEmailAndPassword(auth, email, pass); 
-      } catch (err) {
-        try { 
-          await createUserWithEmailAndPassword(auth, email, pass); 
-        } catch (e2) { 
-          alert('Auth Error: ' + e2.message); 
-        }
+      try { await signInWithEmailAndPassword(auth, email, pass); }
+      catch (err) {
+        try { await createUserWithEmailAndPassword(auth, email, pass); }
+        catch (e2) { alert('Auth Error: ' + e2.message); }
       }
     });
 
     document.getElementById('google-login-btn').addEventListener('click', async () => {
-      try { 
-        await signInWithPopup(auth, googleProvider); 
-      } catch(e) { 
-        alert('Google Login Error: ' + e.message); 
-      }
+      try { await signInWithPopup(auth, googleProvider); } catch(e) { alert(e.message); }
     });
 
     document.getElementById('profile-setup-form').addEventListener('submit', async e => {
