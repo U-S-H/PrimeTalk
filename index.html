@@ -119,7 +119,6 @@
     }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
     
-    /* Animated Profile Frames */
     .avatar-container.frame-gold::before {
       content: ''; position: absolute; inset: -4px; border-radius: 50%;
       background: conic-gradient(from 0deg, #f59e0b, #fbbf24, #d97706, #f59e0b);
@@ -252,22 +251,31 @@
     </div>
   </div>
 
-  <!-- Low-Cost VIP Plans & Levels Modal -->
+  <!-- Low-Cost VIP Plans & Referral/History Dashboard Modal -->
   <div id="vip-verify-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3><i class="fa-solid fa-crown" style="color:var(--vip-gold);"></i> VIP Plans & Levels Center</h3>
+        <h3><i class="fa-solid fa-crown" style="color:var(--vip-gold);"></i> VIP Plans, Referrals & History</h3>
         <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('vip-verify-modal')"></i>
       </div>
       
-      <!-- Countdown & Timer Display -->
       <div id="vip-active-timer-box" class="hidden" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; padding:10px; border-radius:12px; margin-bottom:12px; font-weight:bold; font-size:0.85rem; text-align:center;">
         👑 VIP Active! Time Remaining: <span id="vip-countdown-timer">Loading...</span>
       </div>
 
+      <div style="background:var(--sidebar-bg); padding:12px; border-radius:12px; margin-bottom:12px; border:1px solid var(--border-color); font-size:0.8rem;">
+        <strong>🔗 Referral Invite & Target System</strong>
+        <p style="color:var(--text-muted); margin:4px 0;">Invite friends to unlock Free VIP Targets:</p>
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <input type="text" id="my-referral-link-input" readonly style="font-size:0.75rem; padding:6px;" value="Loading link...">
+          <button class="btn btn-sm" onclick="copyReferralLink()">Copy</button>
+        </div>
+        <div style="font-size:0.75rem; color:var(--primary);">Total Invites: <strong id="referral-count-val">0</strong> / Target: <strong>5 Invites for Free Level 1 VIP</strong></div>
+        <button class="btn btn-sm" style="width:100%; margin-top:6px; background:#3b82f6;" onclick="claimFreeVipViaReferrals()">Claim Free VIP via Referrals</button>
+      </div>
+
       <div style="background:var(--sidebar-bg); padding:10px; border-radius:12px; margin-bottom:12px; border:1px solid var(--border-color); font-size:0.8rem;">
-        <strong>⭐ Select Low-Cost VIP Plan</strong>
-        <p style="color:var(--text-muted); margin:4px 0 8px 0;">Unlock Blue Tick, Levels, & Animated Frames:</p>
+        <strong>⭐ Select Low-Cost VIP Plan (Admin Approval Required)</strong>
         
         <div class="vip-plan-card" onclick="selectVipPlan('1 Month', 'PKR 150', 'Gold Frame')">
           <div><strong>1 Month VIP (Level 1)</strong><div style="font-size:0.7rem; color:var(--text-muted);">Gold Frame + Blue Tick</div></div>
@@ -306,8 +314,29 @@
         </div>
         <div class="form-group"><label>Sender Account Number</label><input type="text" id="vip-sender-acc" required placeholder="03XXXXXXXXX"></div>
         <div class="form-group"><label>Transaction TID / Ref ID</label><input type="text" id="vip-tid-input" required placeholder="Transaction ID"></div>
-        <button type="submit" class="btn">Submit for Instant Activation</button>
+        <button type="submit" class="btn">Submit for Admin Approval</button>
       </form>
+
+      <div style="margin-top:15px; background:var(--sidebar-bg); padding:10px; border-radius:12px; border:1px solid var(--border-color);">
+        <strong style="font-size:0.8rem; color:var(--primary);">📜 My Deposit & Request History</strong>
+        <div id="user-deposit-history-list" style="max-height:120px; overflow-y:auto; font-size:0.75rem; margin-top:6px;">Loading history...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grok AI Configuration Modal -->
+  <div id="grok-ai-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-robot" style="color:var(--primary);"></i> Grok AI Assistant Setup</h3>
+        <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('grok-ai-modal')"></i>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Enter your Grok AI API Key to activate smart replies and chat assistance:</p>
+      <div class="form-group">
+        <label>Grok API Key</label>
+        <input type="password" id="grok-api-key-input" placeholder="xai-xxxxxxxxxxxxxxxx">
+      </div>
+      <button class="btn" onclick="saveGrokApiKey()">Save & Connect Grok AI</button>
     </div>
   </div>
 
@@ -315,18 +344,18 @@
   <div id="vip-receipt-modal" class="modal-overlay hidden">
     <div class="modal-content" style="text-align:center;">
       <div style="font-size:3rem; color:#25d366; margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div>
-      <h3 style="margin-bottom:8px; color:var(--primary);">VIP Payment Receipt</h3>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;">Prime Solutions Official Transaction Receipt</p>
+      <h3 style="margin-bottom:8px; color:var(--primary);">VIP Request Submitted</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;">Pending Admin Verification & Approval</p>
       
       <div style="background:var(--sidebar-bg); padding:15px; border-radius:12px; text-align:left; font-size:0.85rem; margin-bottom:15px; border:1px solid var(--border-color); line-height:1.6;">
         <div>👤 <strong>User:</strong> <span id="receipt-username"></span></div>
         <div>👑 <strong>VIP Plan:</strong> <span id="receipt-plan"></span></div>
-        <div>💰 <strong>Amount Paid:</strong> <span id="receipt-amount"></span></div>
+        <div>💰 <strong>Amount:</strong> <span id="receipt-amount"></span></div>
         <div>💳 <strong>Method:</strong> <span id="receipt-method"></span></div>
         <div>#️⃣ <strong>TID:</strong> <span id="receipt-tid"></span></div>
-        <div>📅 <strong>Date:</strong> <span id="receipt-date"></span></div>
+        <div>⏳ <strong>Status:</strong> <span style="color:var(--vip-gold);">Pending Admin Approval</span></div>
       </div>
-      <button class="btn" onclick="closeModal('vip-receipt-modal')">Done & Enjoy VIP Perks</button>
+      <button class="btn" onclick="closeModal('vip-receipt-modal')">Done</button>
     </div>
   </div>
 
@@ -568,6 +597,7 @@
     <div class="app-header">
       <div class="app-title"><i class="fa-solid fa-comments"></i> PrimeTalk</div>
       <div style="display:flex; gap: 15px; color: var(--text-muted); align-items: center; font-size: 1.1rem;">
+        <i class="fa-solid fa-robot" style="cursor:pointer;" title="Grok AI Assistant" onclick="openModal('grok-ai-modal')"></i>
         <i class="fa-solid fa-bullhorn" style="cursor:pointer;" title="New Broadcast" onclick="openModal('broadcast-modal')"></i>
         <i class="fa-solid fa-video" style="cursor:pointer;" title="Conference Rooms" onclick="openModal('multi-room-modal')"></i>
         <i class="fa-solid fa-users" style="cursor:pointer;" title="Create Group" onclick="openModal('create-group-modal')"></i>
@@ -766,6 +796,7 @@
         <div style="display:flex; align-items:center; gap:6px;">
           <div class="swipe-indicator">Swipe <i class="fa-solid fa-arrow-right"></i></div>
           <div class="header-actions-scroll">
+            <button class="header-action-btn" title="Disappearing Timer" onclick="promptDisappearingTimer()"><i class="fa-solid fa-stopwatch"></i></button>
             <button class="header-action-btn" title="Clear Chat History" onclick="clearCurrentChatMessages()"><i class="fa-solid fa-broom"></i></button>
             <button class="header-action-btn" title="Share Contact Card" onclick="shareContactCard()"><i class="fa-solid fa-address-card"></i></button>
             <button class="header-action-btn" title="Archive Chat" onclick="toggleArchiveCurrentChat()"><i class="fa-solid fa-box-archive"></i></button>
@@ -823,7 +854,8 @@
         <button class="action-icon-btn" onclick="document.getElementById('media-file-input').click()"><i class="fa-solid fa-image"></i></button>
         <button class="action-icon-btn" onclick="document.getElementById('doc-file-input').click()"><i class="fa-solid fa-paperclip"></i></button>
         <button class="action-icon-btn" id="voice-record-btn" onclick="toggleVoiceRecording()"><i class="fa-solid fa-microphone"></i></button>
-        <input type="text" class="input-field" id="message-input" placeholder="Type a message or use @username to mention..." oninput="handleTypingInput()" onkeypress="handleKeyPress(event)">
+        <button class="action-icon-btn" id="round-video-btn" title="Round Video Note" onclick="toggleRoundVideoRecording()"><i class="fa-solid fa-circle-play"></i></button>
+        <input type="text" class="input-field" id="message-input" placeholder="Type a message or ask @grok AI..." oninput="handleTypingInput()" onkeypress="handleKeyPress(event)">
         <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>
@@ -886,6 +918,22 @@
     window.openModal = id => document.getElementById(id).classList.remove('hidden');
     window.closeModal = id => document.getElementById(id).classList.add('hidden');
     window.openWhiteboardModal = () => openModal('whiteboard-modal');
+
+    window.saveGrokApiKey = function() {
+      const key = document.getElementById('grok-api-key-input').value.trim();
+      if(!key) { alert('Please enter valid Grok API Key!'); return; }
+      localStorage.setItem('grok_api_key', key);
+      alert('Grok AI API Key saved successfully!');
+      closeModal('grok-ai-modal');
+    };
+
+    window.promptDisappearingTimer = function() {
+      const choice = prompt("Set Disappearing Messages Timer:\n1 = Off\n2 = 60 seconds\n3 = 1 Hour\n4 = 24 Hours", "1");
+      if(choice === '2') { disappearingTimerSec = 60; alert('Disappearing timer set to 60 seconds.'); }
+      else if(choice === '3') { disappearingTimerSec = 3600; alert('Disappearing timer set to 1 Hour.'); }
+      else if(choice === '4') { disappearingTimerSec = 86400; alert('Disappearing timer set to 24 Hours.'); }
+      else { disappearingTimerSec = 0; alert('Disappearing messages turned off.'); }
+    };
 
     window.unlockWithBiometrics = async function() {
       if (window.PublicKeyCredential) {
@@ -988,11 +1036,49 @@
     window.openVIPModal = function() {
       openModal('vip-verify-modal');
       checkVipStatusAndTimer();
+      loadUserDepositHistory();
+      loadUserReferralStats();
     };
 
     window.selectVipPlan = function(planName, price, frameType) {
       document.getElementById('selected-plan-input').value = `${planName} (${price}) - Frame: ${frameType}`;
-      alert(`Selected ${planName} plan! Fill details below and submit.`);
+      alert(`Selected ${planName} plan! Fill details below and submit for admin approval.`);
+    };
+
+    window.copyReferralLink = function() {
+      const linkInput = document.getElementById('my-referral-link-input');
+      linkInput.select();
+      navigator.clipboard.writeText(linkInput.value);
+      alert('Referral link copied to clipboard!');
+    };
+
+    async function loadUserReferralStats() {
+      if(!currentUserProfile) return;
+      const refLink = `${window.location.origin}${window.location.pathname}?ref=${currentUserProfile.username}`;
+      document.getElementById('my-referral-link-input').value = refLink;
+
+      const refSnap = await get(ref(db, `referrals/${currentUser.uid}`));
+      let count = 0;
+      if(refSnap.exists()) {
+        count = Object.keys(refSnap.val()).length;
+      }
+      document.getElementById('referral-count-val').innerText = count;
+    }
+
+    window.claimFreeVipViaReferrals = async function() {
+      const refSnap = await get(ref(db, `referrals/${currentUser.uid}`));
+      let count = refSnap.exists() ? Object.keys(refSnap.val()).length : 0;
+
+      if(count >= 5) {
+        const expiresAt = Date.now() + (30 * 24 * 60 * 60 * 1000);
+        await update(ref(db, `users/${currentUser.uid}`), {
+          isVip: true, accountType: 'vip', vipLevel: 1, vipFrame: 'frame-gold', vipExpiresAt: expiresAt
+        });
+        alert('Congratulations! Referral target achieved. Free Level 1 VIP activated successfully!');
+        location.reload();
+      } else {
+        alert(`Target not met yet! You have ${count}/5 invites. Invite more friends to claim free VIP.`);
+      }
     };
 
     function checkVipStatusAndTimer() {
@@ -1026,46 +1112,74 @@
       const method = document.getElementById('vip-method-select').value;
       const senderAcc = document.getElementById('vip-sender-acc').value.trim();
       const tid = document.getElementById('vip-tid-input').value.trim();
-
-      let durationDays = 30;
-      let vipLevel = 1;
-      let frame = 'frame-gold';
-
-      if(planStr.includes('6 Months')) { durationDays = 180; vipLevel = 2; frame = 'frame-diamond'; }
-      else if(planStr.includes('1 Year')) { durationDays = 365; vipLevel = 3; frame = 'frame-fire'; }
-      else if(planStr.includes('2 Years')) { durationDays = 730; vipLevel = 5; frame = 'frame-gold'; }
-
-      const expiresAt = Date.now() + (durationDays * 24 * 60 * 60 * 1000);
       const priceText = planStr.split('(')[1].split(')')[0];
 
-      await update(ref(db, `users/${currentUser.uid}`), {
-        isVip: true, accountType: 'vip', vipLevel, vipFrame: frame, vipExpiresAt: expiresAt
+      const reqRef = push(ref(db, 'vip_requests'));
+      await set(reqRef, {
+        requestId: reqRef.key,
+        uid: currentUser.uid,
+        name: currentUserProfile.name,
+        username: currentUserProfile.username,
+        plan: planStr,
+        method,
+        senderAcc,
+        tid,
+        amount: priceText,
+        status: 'Pending',
+        timestamp: serverTimestamp()
       });
-
-      currentUserProfile.isVip = true;
-      currentUserProfile.vipLevel = vipLevel;
-      currentUserProfile.vipFrame = frame;
-      currentUserProfile.vipExpiresAt = expiresAt;
 
       closeModal('vip-verify-modal');
 
-      // Show Automated Receipt
       document.getElementById('receipt-username').innerText = '@' + currentUserProfile.username;
       document.getElementById('receipt-plan').innerText = planStr.split('(')[0];
       document.getElementById('receipt-amount').innerText = priceText;
       document.getElementById('receipt-method').innerText = method;
       document.getElementById('receipt-tid').innerText = tid;
-      document.getElementById('receipt-date').innerText = new Date().toLocaleString();
       openModal('vip-receipt-modal');
-
-      // Refresh profile view
-      location.reload();
     });
+
+    async function loadUserDepositHistory() {
+      const container = document.getElementById('user-deposit-history-list');
+      container.innerHTML = 'Loading history...';
+      onValue(ref(db, 'vip_requests'), snap => {
+        const data = snap.val();
+        container.innerHTML = '';
+        let found = false;
+        if(data) {
+          Object.values(data).forEach(req => {
+            if(req.uid === currentUser.uid) {
+              found = true;
+              let statusColor = req.status === 'Approved' ? '#25d366' : '#f59e0b';
+              container.innerHTML += `
+                <div style="background:var(--card-bg); padding:8px; border-radius:8px; margin-bottom:6px; border:1px solid var(--border-color);">
+                  <div><strong>${req.plan.split('(')[0]}</strong> - <span style="color:${statusColor}; font-weight:bold;">${req.status}</span></div>
+                  <div style="color:var(--text-muted); font-size:0.7rem;">TID: ${req.tid} | Method: ${req.method}</div>
+                </div>`;
+            }
+          });
+        }
+        if(!found) container.innerHTML = 'No payment requests found.';
+      });
+    }
 
     onAuthStateChanged(auth, async user => {
       if (user) {
         currentUser = user;
         
+        const urlParams = new URLSearchParams(window.location.search);
+        const refUser = urlParams.get('ref');
+        if(refUser) {
+          const snapUsers = await get(ref(db, 'users'));
+          if(snapUsers.exists()) {
+            snapUsers.forEach(child => {
+              if(child.val().username === refUser && child.val().uid !== user.uid) {
+                set(ref(db, `referrals/${child.val().uid}/${user.uid}`), { username: user.email, timestamp: serverTimestamp() });
+              }
+            });
+          }
+        }
+
         onValue(ref(db, `bans/${user.uid}`), snap => {
           if(snap.exists() && snap.val().banned) {
             alert('CRITICAL: Your account has been suspended by the administrator.');
@@ -1235,8 +1349,9 @@
             const req = reqs[rKey];
             vipReqList.innerHTML += `
               <div style="background:var(--sidebar-bg); padding:8px; border-radius:8px; margin-bottom:6px; font-size:0.75rem;">
-                <strong>${req.name}</strong> (@${req.username})<br>
-                TID: <strong style="color:var(--primary);">${req.tid}</strong>
+                <strong>${req.name}</strong> (@${req.username}) - Plan: ${req.plan.split('(')[0]}<br>
+                TID: <strong style="color:var(--primary);">${req.tid}</strong> | Status: <strong>${req.status}</strong>
+                ${req.status === 'Pending' ? `<div style="margin-top:6px; display:flex; gap:4px;"><button class="btn btn-sm" style="background:#25d366;" onclick="approveVipRequest('${rKey}', '${req.uid}', '${req.plan}')">Approve VIP</button><button class="btn btn-sm btn-danger" onclick="rejectVipRequest('${rKey}')">Reject</button></div>` : ''}
               </div>`;
           });
         } else {
@@ -1260,6 +1375,30 @@
           reportsList.innerHTML = 'No reported content.';
         }
       });
+    };
+
+    window.approveVipRequest = async function(reqKey, targetUid, planStr) {
+      let durationDays = 30;
+      let vipLevel = 1;
+      let frame = 'frame-gold';
+
+      if(planStr.includes('6 Months')) { durationDays = 180; vipLevel = 2; frame = 'frame-diamond'; }
+      else if(planStr.includes('1 Year')) { durationDays = 365; vipLevel = 3; frame = 'frame-fire'; }
+      else if(planStr.includes('2 Years')) { durationDays = 730; vipLevel = 5; frame = 'frame-gold'; }
+
+      const expiresAt = Date.now() + (durationDays * 24 * 60 * 60 * 1000);
+
+      await update(ref(db, `users/${targetUid}`), {
+        isVip: true, accountType: 'vip', vipLevel, vipFrame: frame, vipExpiresAt: expiresAt
+      });
+
+      await update(ref(db, `vip_requests/${reqKey}`), { status: 'Approved' });
+      alert('VIP Request approved and badge activated for user!');
+    };
+
+    window.rejectVipRequest = async function(reqKey) {
+      await update(ref(db, `vip_requests/${reqKey}`), { status: 'Rejected' });
+      alert('VIP Request rejected.');
     };
 
     window.promoteUserRole = async function(uid, newRole) {
@@ -2242,13 +2381,12 @@
                 <button class="btn btn-sm" style="width:100%; margin-bottom:4px; background:var(--sidebar-bg); border:1px solid var(--border-color);" onclick="votePollOption('${roomId}', '${key}', 0, '${msgEndpoint}')">1️⃣ ${opts[0]}</button>
                 <button class="btn btn-sm" style="width:100%; background:var(--sidebar-bg); border:1px solid var(--border-color);" onclick="votePollOption('${roomId}', '${key}', 1, '${msgEndpoint}')">2️⃣ ${opts[1]}</button>
               `;
-            } else if(m.type === 'text' && (m.text.includes('http://') || m.text.includes('https://'))) {
-              const url = m.text.match(/(https?:\/\/[^\s]+)/g)[0];
-              content = `${formattedText}
-                <div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-color); padding:8px; border-radius:10px; margin-top:6px;">
-                  <div style="font-weight:600; font-size:0.8rem; color:var(--primary); margin-bottom:2px;"><i class="fa-solid fa-globe"></i> Rich Web Preview</div>
-                  <a href="${url}" target="_blank" style="font-size:0.75rem; color:#3b82f6; text-decoration:underline; word-break:break-all;">${url}</a>
-                </div>`;
+            } else if(m.type === 'round_video') {
+              content = `
+                <div style="width:180px; height:180px; border-radius:50%; overflow:hidden; border:3px solid var(--primary); position:relative; background:#000;">
+                  <video src="${m.mediaUrl}" controls autoplay loop style="width:100%; height:100%; object-fit:cover;"></video>
+                </div>
+                <div style="font-size:0.75rem; margin-top:4px; text-align:center;">📹 Round Video Note</div>`;
             } else if(m.type === 'image') {
               if(m.isViewOnce && !isMe && m.viewed) {
                 content = `<div style="font-style:italic; font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-eye-slash"></i> View Once media opened & destroyed</div>`;
@@ -2293,7 +2431,7 @@
           });
           msgBox.scrollTop = msgBox.scrollHeight;
         } else {
-          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened.</div>`;
+          msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened. Use @grok to ask AI.</div>`;
         }
       });
     };
@@ -2346,13 +2484,42 @@
 
     window.closeActiveChat = () => { document.getElementById('chat-screen-pane').classList.add('hidden'); };
 
-    window.sendMessage = () => {
+    window.sendMessage = async () => {
       const input = document.getElementById('message-input');
       const text = input.value.trim();
       if(!text || !activeChatRoom) return;
+      
       sendMsgPayload({ text, type: 'text' });
       input.value = '';
       cancelReply();
+
+      if(text.startsWith('@grok')) {
+        const query = text.replace('@grok', '').trim();
+        const apiKey = localStorage.getItem('grok_api_key');
+        if(!apiKey) {
+          sendMsgPayload({ text: '🤖 [Grok AI]: Please configure your Grok API Key in Settings or top bar icon first.', type: 'text' });
+          return;
+        }
+
+        try {
+          const response = await fetch('https://api.x.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: 'grok-beta',
+              messages: [{ role: 'user', content: query }]
+            })
+          });
+          const resData = await response.json();
+          const aiReply = resData.choices && resData.choices[0] ? resData.choices[0].message.content : 'No response from Grok AI.';
+          sendMsgPayload({ text: `🤖 [Grok AI]: ${aiReply}`, type: 'text' });
+        } catch(err) {
+          sendMsgPayload({ text: `🤖 [Grok AI Error]: ${err.message}`, type: 'text' });
+        }
+      }
     };
 
     window.cancelReply = function() {
@@ -2418,6 +2585,31 @@
         if(mediaRecorder) mediaRecorder.stop();
         isRecording = false;
         btn.classList.remove('recording-active');
+      }
+    };
+
+    window.toggleRoundVideoRecording = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const recorder = new MediaRecorder(stream);
+        let chunks = [];
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
+          stream.getTracks().forEach(t => t.stop());
+          const blob = new Blob(chunks, { type: 'video/webm' });
+          const reader = new FileReader();
+          reader.onload = ev => {
+            sendMsgPayload({ text: '📹 Round Video Note', type: 'round_video', mediaUrl: ev.target.result });
+          };
+          reader.readAsDataURL(blob);
+        };
+        recorder.start();
+        alert('Recording round video note for 5 seconds...');
+        setTimeout(() => {
+          recorder.stop();
+        }, 5000);
+      } catch(e) {
+        alert('Camera/Mic permission needed for round video notes.');
       }
     };
 
