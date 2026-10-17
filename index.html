@@ -236,7 +236,7 @@
     </div>
   </div>
 
-  <!-- VIP Badge Verification Modal -->
+  <!-- VIP Badge Verification & Detailed Perks Modal -->
   <div id="vip-verify-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -244,6 +244,17 @@
         <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('vip-verify-modal')"></i>
       </div>
       
+      <!-- VIP Perks Breakdown Details -->
+      <div style="background:var(--sidebar-bg); padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid var(--border-color); font-size:0.78rem; line-height:1.5;">
+        <strong style="color:var(--primary); display:block; margin-bottom:4px;"><i class="fa-solid fa-star"></i> VIP Exclusive Perks & Features:</strong>
+        <ul style="padding-left:16px; color:var(--text-muted);">
+          <li>✅ Official Blue Verification Checkmark Tick[span_0](start_span)[span_0](end_span)</li>
+          <li>⚡ Priority Message Ranking & Support</li>
+          <li>📁 Unlimited Cloud Vault Storage Access</li>
+          <li>🎨 Exclusive Theme Customization & Zero Ads</li>
+        </ul>
+      </div>
+
       <div style="background:var(--sidebar-bg); padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid var(--border-color); font-size:0.8rem;">
         <strong>Method 1: Complete Invites Target</strong>
         <p style="color:var(--text-muted); margin-top:4px;">Invite 10 friends using your invite link to automatically get the Blue Tick badge.</p>
@@ -251,8 +262,8 @@
       </div>
 
       <div style="background:var(--sidebar-bg); padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid var(--border-color); font-size:0.8rem;">
-        <strong>Method 2: Manual Payment Upgrade</strong>
-        <p style="color:var(--text-muted); margin:4px 0 8px 0;">Send payment to any account below and enter TID:</p>
+        <strong>Method 2: Manual Payment Upgrade (PKR 500)</strong>
+        <p style="color:var(--text-muted); margin:4px 0 8px 0;">Send payment to any account below and enter TID for manual admin approval:</p>
         <ul style="list-style:none; line-height:1.6; font-size:0.75rem;">
           <li>🟢 <strong>Easypaisa:</strong> 03379827882</li>
           <li>🔴 <strong>JazzCash:</strong> 03705519562</li>
@@ -271,7 +282,7 @@
         </div>
         <div class="form-group"><label>Sender Account Number</label><input type="text" id="vip-sender-acc" required placeholder="03XXXXXXXXX"></div>
         <div class="form-group"><label>Transaction TID / Ref ID</label><input type="text" id="vip-tid-input" required placeholder="Transaction ID"></div>
-        <button type="submit" class="btn">Submit for Admin Approval</button>
+        <button type="submit" class="btn">Submit for Manual Admin Approval</button>
       </form>
     </div>
   </div>
@@ -549,6 +560,11 @@
         <div id="admin-users-list" style="max-height:180px; overflow-y:auto; font-size:0.8rem;">Loading users...</div>
       </div>
 
+      <div style="background:var(--card-bg); padding:12px; border-radius:10px; margin-bottom:14px; border:1px solid var(--border-color);">
+        <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i> VIP Requests Manual Approval</h4>
+        <div id="admin-vip-requests-list" style="max-height:160px; overflow-y:auto; font-size:0.8rem; color:var(--text-muted);">Loading VIP requests...</div>
+      </div>
+
       <div style="background:var(--card-bg); padding:12px; border-radius:10px; border:1px solid var(--border-color);">
         <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-triangle-exclamation"></i> Reported Content Moderation Queue</h4>
         <div id="admin-reports-list" style="font-size:0.8rem; color:var(--text-muted);">No reported content.</div>
@@ -561,7 +577,7 @@
         <div class="avatar" id="profile-page-avatar" style="width: 70px; height: 70px; font-size: 1.5rem; margin: 0 auto 10px auto;">PT</div>
         <h3 id="profile-page-name">Loading...</h3>
         <p id="profile-page-username" style="font-size: 0.85rem; color: var(--primary);">@username</p>
-        <button class="btn btn-sm" style="margin-top:8px; background:transparent; border:1px solid var(--blue-tick); color:var(--blue-tick);" onclick="openVIPModal()"><i class="fa-solid fa-circle-check"></i> Get Verified Badge</button>
+        <button class="btn btn-sm" style="margin-top:8px; background:transparent; border:1px solid var(--blue-tick); color:var(--blue-tick);" onclick="openVIPModal()"><i class="fa-solid fa-circle-check"></i> Get VIP Verified Badge</button>
       </div>
       <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; border: 1px solid var(--border-color);">
         <div class="form-group" style="margin-bottom: 12px;">
@@ -590,7 +606,6 @@
         <button class="btn btn-sm hidden" id="nav-admin-btn" style="margin-bottom: 12px; width:100%; background:#8b5cf6;" onclick="switchNavTab('admin')"><i class="fa-solid fa-shield-halved"></i> Open Admin Dashboard</button>
         <button class="btn btn-sm" style="margin-bottom: 12px; width:100%; background:#3b82f6;" onclick="openModal('sessions-modal')"><i class="fa-solid fa-laptop-code"></i> Active Login Sessions</button>
         <button class="btn btn-sm" style="margin-bottom: 12px; width:100%;" onclick="openBlockedUsersModal()"><i class="fa-solid fa-ban"></i> Manage Blocked Users</button>
-        <button class="btn btn-sm" style="margin-bottom: 12px; width:100%; background:#3b82f6;" onclick="exportChatHistory()"><i class="fa-solid fa-download"></i> Export Chat Backup</button>
         
         <p style="margin-top: 15px;"><i class="fa-solid fa-lock" style="color:var(--primary);"></i> <strong>Security:</strong> Enterprise E2EE</p>
         <p style="margin-top: 8px;"><i class="fa-solid fa-building" style="color:var(--primary);"></i> <strong>Agency:</strong> Prime Solutions</p>
@@ -644,19 +659,11 @@
           <div class="swipe-indicator">Swipe <i class="fa-solid fa-arrow-right"></i></div>
           <div class="header-actions-scroll">
             <button class="header-action-btn" title="Report Message" onclick="promptReportMessage()"><i class="fa-solid fa-triangle-exclamation"></i></button>
-            <button class="header-action-btn" title="Create Kanban Task" onclick="promptCreateTask()"><i class="fa-solid fa-square-check"></i></button>
-            <button class="header-action-btn" title="Split Bill / Invoice" onclick="promptSplitBill()"><i class="fa-solid fa-file-invoice-dollar"></i></button>
-            <button class="header-action-btn" title="Secure Cloud Vault" onclick="promptVaultFile()"><i class="fa-solid fa-box-archive"></i></button>
-            <button class="header-action-btn" title="Create Poll" onclick="promptCreatePoll()"><i class="fa-solid fa-square-poll-vertical"></i></button>
-            <button class="header-action-btn" title="Schedule Meeting" onclick="promptScheduleMeeting()"><i class="fa-solid fa-calendar-days"></i></button>
             <button class="header-action-btn" title="Live Code / Whiteboard" onclick="openWhiteboardModal()"><i class="fa-solid fa-code"></i></button>
-            <button class="header-action-btn" title="Share Live GPS Location" onclick="sendLiveLocation()"><i class="fa-solid fa-location-dot"></i></button>
             <button class="header-action-btn" title="Verify E2EE QR Key" onclick="openQRCodeVerification()"><i class="fa-solid fa-qrcode"></i></button>
             <button class="header-action-btn" title="Search Messages" onclick="toggleInChatSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
             <button class="header-action-btn" title="WebRTC Audio Call" onclick="startWebRTCCall('audio')"><i class="fa-solid fa-phone"></i></button>
             <button class="header-action-btn" title="WebRTC Video Call" onclick="startWebRTCCall('video')"><i class="fa-solid fa-video"></i></button>
-            <button class="header-action-btn" title="Pin Chat" onclick="togglePinCurrentChat()"><i class="fa-solid fa-thumbtack"></i></button>
-            <button class="header-action-btn" title="Block User" onclick="toggleBlockUser()"><i class="fa-solid fa-ban"></i></button>
           </div>
         </div>
       </div>
@@ -750,9 +757,7 @@
     let currentUser = null, currentUserProfile = null;
     let activeChatRoom = null;
     let mediaRecorder = null, audioChunks = [];
-    let isRecording = false, soundEnabled = true, typingTimeout = null;
-    let disappearingTimerSec = 0;
-    let replyingToMsg = null;
+    let isRecording = false;
     
     let peerConnection = null, localStream = null, remoteStream = null;
     let incomingCallData = null;
@@ -838,7 +843,7 @@
         method, senderAcc, tid, status: 'pending', timestamp: serverTimestamp()
       });
 
-      alert('VIP Verification Request Submitted! Pending Admin Approval.');
+      alert('VIP Verification Request Submitted! Pending Manual Admin Approval.');
       closeModal('vip-verify-modal');
     });
 
@@ -973,6 +978,7 @@
       const statsBox = document.getElementById('admin-stats-box');
       const usersList = document.getElementById('admin-users-list');
       const reportsList = document.getElementById('admin-reports-list');
+      const vipReqList = document.getElementById('admin-vip-requests-list');
 
       onValue(ref(db, 'users'), snap => {
         const users = snap.val() || {};
@@ -993,6 +999,30 @@
         });
       });
 
+      onValue(ref(db, 'vip_requests'), snap => {
+        const reqs = snap.val();
+        vipReqList.innerHTML = '';
+        if(reqs) {
+          Object.keys(reqs).forEach(rKey => {
+            const req = reqs[rKey];
+            if(req.status === 'pending') {
+              vipReqList.innerHTML += `
+                <div style="background:var(--sidebar-bg); padding:8px; border-radius:6px; margin-bottom:6px; font-size:0.75rem;">
+                  <strong>${req.name}</strong> (@${req.username})<br>
+                  Method: ${req.method} | Sender: ${req.senderAcc}<br>
+                  TID: <strong style="color:var(--primary);">${req.tid}</strong>
+                  <div style="display:flex; gap:6px; margin-top:6px;">
+                    <button class="btn btn-sm" style="flex:1; background:#25d366;" onclick="approveVipRequest('${rKey}', '${req.uid}')">Approve VIP</button>
+                    <button class="btn btn-sm btn-danger" style="flex:1;" onclick="rejectVipRequest('${rKey}')">Reject</button>
+                  </div>
+                </div>`;
+            }
+          });
+        } else {
+          vipReqList.innerHTML = 'No pending VIP requests.';
+        }
+      });
+
       onValue(ref(db, 'reports'), snap => {
         const reps = snap.val();
         reportsList.innerHTML = '';
@@ -1009,6 +1039,17 @@
           reportsList.innerHTML = 'No reported content.';
         }
       });
+    };
+
+    window.approveVipRequest = async function(reqKey, targetUid) {
+      await update(ref(db, `users/${targetUid}`), { isVip: true });
+      await update(ref(db, `vip_requests/${reqKey}`), { status: 'approved' });
+      alert('VIP badge approved successfully for the user!');
+    };
+
+    window.rejectVipRequest = async function(reqKey) {
+      await update(ref(db, `vip_requests/${reqKey}`), { status: 'rejected' });
+      alert('VIP request rejected.');
     };
 
     window.promoteUserRole = async function(uid, newRole) {
@@ -1167,7 +1208,7 @@
     window.replyToStatusDirectDM = function(targetUid, userName, caption) {
       document.getElementById('status-viewer-modal').remove();
       openActiveChat(targetUid, userName, false);
-      replyingToMsg = { senderName: userName, text: `Status Story: ${caption}` };
+      let replyingToMsg = { senderName: userName, text: `Status Story: ${caption}` };
       document.getElementById('reply-quote-text').innerText = `${userName}'s Status: ${caption}`;
       document.getElementById('reply-preview-container').classList.remove('hidden');
     };
@@ -1699,14 +1740,6 @@
     };
 
     window.openActiveChat = async (id, name, isGroup) => {
-      if(!isGroup) {
-        const blockSnap = await get(ref(db, `blocks/${currentUser.uid}/${id}`));
-        if(blockSnap.exists()) { alert("You have blocked this user. Unblock them in settings to chat."); return; }
-      } else {
-        const memberCheck = await get(ref(db, `group_members/${id}/${currentUser.uid}`));
-        if(!memberCheck.exists()) { alert("Access Denied: You are not a member of this secure group."); return; }
-      }
-
       activeChatRoom = { id, name, isGroup };
       document.getElementById('active-chat-name').innerText = name;
       document.getElementById('active-chat-status').innerText = isGroup ? 'Secure Team Room (Tap for info)' : `@${name}`;
@@ -1724,8 +1757,6 @@
 
       const roomId = isGroup ? id : (currentUser.uid < id ? `${currentUser.uid}_${id}` : `${id}_${currentUser.uid}`);
       const msgBox = document.getElementById('messages-container');
-      const mediaGrid = document.getElementById('shared-media-grid');
-      mediaGrid.innerHTML = '';
 
       const msgEndpoint = isGroup ? `group_messages/${roomId}` : `direct_messages/${roomId}`;
       onValue(ref(db, msgEndpoint), snapshot => {
