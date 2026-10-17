@@ -28,6 +28,7 @@
       --accent-badge: #00d25b;
       --danger: #ef4444;
       --blue-tick: #1d9bf0;
+      --vip-gold: #f59e0b;
       --chat-wallpaper: radial-gradient(rgba(0, 168, 132, 0.05) 1px, transparent 0);
     }
 
@@ -64,28 +65,28 @@
 
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(11, 20, 26, 0.92); backdrop-filter: blur(10px); z-index: 9999;
+      background: rgba(11, 20, 26, 0.92); backdrop-filter: blur(12px); z-index: 9999;
       display: flex; justify-content: center; align-items: center; padding: 20px;
       animation: fadeIn 0.3s ease-in-out;
     }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 
     .modal-content {
-      background: var(--card-bg); backdrop-filter: blur(16px); color: var(--text-main);
-      width: 100%; max-width: 420px; border-radius: 20px; padding: 24px;
-      border: 1px solid var(--border-color); box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 20px var(--primary-glow);
+      background: var(--card-bg); backdrop-filter: blur(18px); color: var(--text-main);
+      width: 100%; max-width: 440px; border-radius: 24px; padding: 26px;
+      border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 25px var(--primary-glow);
       max-height: 90vh; overflow-y: auto;
     }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
     .form-group input, .form-group select, .form-group textarea {
-      width: 100%; padding: 12px; border: 1px solid var(--border-color); background: var(--sidebar-bg); color: var(--text-main); border-radius: 10px; font-size: 0.9rem; outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+      width: 100%; padding: 12px; border: 1px solid var(--border-color); background: var(--sidebar-bg); color: var(--text-main); border-radius: 12px; font-size: 0.9rem; outline: none; transition: border-color 0.3s, box-shadow 0.3s;
     }
-    .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+    .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 12px var(--primary-glow); }
     
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: var(--primary); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 6px; transition: opacity 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px var(--primary-glow); }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: var(--primary); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 6px; transition: opacity 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px var(--primary-glow); }
     .btn:hover { opacity: 0.9; }
-    .btn-google { background: #ea4335; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(234, 67, 53, 0.4); }
+    .btn-google { background: #ea4335; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(234, 67, 53, 0.4); border-radius: 12px; }
     .btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
     .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; margin: 0; }
     .hidden { display: none !important; }
@@ -110,23 +111,37 @@
     }
     .chat-item:active { background: var(--card-bg); }
     
+    .avatar-container { position: relative; width: 48px; height: 48px; flex-shrink: 0; }
     .avatar {
-      width: 48px; height: 48px; border-radius: 50%; background: var(--primary);
-      display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; flex-shrink: 0; position: relative; font-size: 1rem; overflow: hidden;
-      box-shadow: 0 4px 10px var(--primary-glow);
+      width: 100%; height: 100%; border-radius: 50%; background: var(--primary);
+      display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 1rem; overflow: hidden;
+      box-shadow: 0 4px 10px var(--primary-glow); position: relative; z-index: 2;
     }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
     
-    .vip-blue-tick { color: var(--blue-tick); font-size: 0.85rem; margin-left: 4px; display: inline-flex; align-items: center; }
-
-    .story-ring-wrapper {
-      position: relative; padding: 3px; border-radius: 50%;
-      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-      cursor: pointer; display: inline-block;
+    /* Animated Profile Frames */
+    .avatar-container.frame-gold::before {
+      content: ''; position: absolute; inset: -4px; border-radius: 50%;
+      background: conic-gradient(from 0deg, #f59e0b, #fbbf24, #d97706, #f59e0b);
+      animation: rotateFrame 3s linear infinite; z-index: 1;
     }
-    .story-ring-inner { background: var(--bg-main); border-radius: 50%; padding: 2px; display: flex; }
+    .avatar-container.frame-diamond::before {
+      content: ''; position: absolute; inset: -4px; border-radius: 50%;
+      background: conic-gradient(from 0deg, #38bdf8, #818cf8, #c084fc, #38bdf8);
+      animation: rotateFrame 3s linear infinite; z-index: 1;
+    }
+    .avatar-container.frame-fire::before {
+      content: ''; position: absolute; inset: -4px; border-radius: 50%;
+      background: conic-gradient(from 0deg, #ef4444, #f97316, #eab308, #ef4444);
+      animation: rotateFrame 2s linear infinite; z-index: 1;
+    }
+    @keyframes rotateFrame { 100% { transform: rotate(360deg); } }
 
-    .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--accent-badge); border-radius: 50%; border: 2px solid var(--sidebar-bg); }
+    .vip-blue-tick { color: var(--blue-tick); font-size: 0.85rem; margin-left: 4px; display: inline-flex; align-items: center; }
+    .business-badge { background: #f59e0b; color: #000; font-size: 0.65rem; padding: 1px 6px; border-radius: 6px; font-weight: bold; margin-left: 6px; display: inline-flex; align-items: center; gap: 2px; }
+    .vip-level-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-size: 0.65rem; padding: 2px 6px; border-radius: 6px; font-weight: 800; margin-left: 6px; display: inline-flex; align-items: center; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+
+    .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--accent-badge); border-radius: 50%; border: 2px solid var(--sidebar-bg); z-index: 3; }
     .offline-dot { background: var(--text-muted); }
 
     .app-bottom-nav {
@@ -217,6 +232,11 @@
     .status-bar-container { display: flex; gap: 14px; padding: 12px 16px; overflow-x: auto; background: var(--sidebar-bg); border-bottom: 1px solid var(--border-color); }
     .status-item { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 65px; cursor: pointer; }
     .status-item span { font-size: 0.7rem; color: var(--text-muted); max-width: 65px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; text-align: center; }
+
+    .vip-plan-card {
+      background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;
+    }
+    .vip-plan-card:hover { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
   </style>
 </head>
 <body>
@@ -232,42 +252,51 @@
     </div>
   </div>
 
-  <!-- VIP Badge Verification & Detailed Perks Modal -->
+  <!-- Low-Cost VIP Plans & Levels Modal -->
   <div id="vip-verify-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3><i class="fa-solid fa-circle-check" style="color:var(--blue-tick);"></i> Get VIP Verified Badge</h3>
+        <h3><i class="fa-solid fa-crown" style="color:var(--vip-gold);"></i> VIP Plans & Levels Center</h3>
         <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 1.2rem;" onclick="closeModal('vip-verify-modal')"></i>
       </div>
       
-      <div style="background:var(--sidebar-bg); padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid var(--border-color); font-size:0.78rem; line-height:1.5;">
-        <strong style="color:var(--primary); display:block; margin-bottom:4px;"><i class="fa-solid fa-star"></i> VIP Exclusive Perks & Features:</strong>
-        <ul style="padding-left:16px; color:var(--text-muted);">
-          <li>✅ Official Blue Verification Checkmark Tick[span_1](start_span)[span_1](end_span)</li>
-          <li>⚡ Priority Message Ranking & Support</li>
-          <li>📁 Unlimited Cloud Vault Storage Access</li>
-          <li>🎨 Exclusive Theme Customization & Zero Ads</li>
-        </ul>
+      <!-- Countdown & Timer Display -->
+      <div id="vip-active-timer-box" class="hidden" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; padding:10px; border-radius:12px; margin-bottom:12px; font-weight:bold; font-size:0.85rem; text-align:center;">
+        👑 VIP Active! Time Remaining: <span id="vip-countdown-timer">Loading...</span>
       </div>
 
-      <div style="background:var(--sidebar-bg); padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid var(--border-color); font-size:0.8rem;">
-        <strong>Method 1: Complete Invites Target</strong>
-        <p style="color:var(--text-muted); margin-top:4px;">Invite 10 friends using your invite link to automatically get the Blue Tick badge.</p>
-        <div style="margin-top:8px; font-weight:600; color:var(--primary);" id="invites-progress-text">Invites Progress: 0 / 10</div>
+      <div style="background:var(--sidebar-bg); padding:10px; border-radius:12px; margin-bottom:12px; border:1px solid var(--border-color); font-size:0.8rem;">
+        <strong>⭐ Select Low-Cost VIP Plan</strong>
+        <p style="color:var(--text-muted); margin:4px 0 8px 0;">Unlock Blue Tick, Levels, & Animated Frames:</p>
+        
+        <div class="vip-plan-card" onclick="selectVipPlan('1 Month', 'PKR 150', 'Gold Frame')">
+          <div><strong>1 Month VIP (Level 1)</strong><div style="font-size:0.7rem; color:var(--text-muted);">Gold Frame + Blue Tick</div></div>
+          <div style="font-weight:bold; color:var(--primary);">PKR 150</div>
+        </div>
+
+        <div class="vip-plan-card" onclick="selectVipPlan('6 Months', 'PKR 600', 'Diamond Frame')">
+          <div><strong>6 Months VIP (Level 2)</strong><div style="font-size:0.7rem; color:var(--text-muted);">Diamond Frame + Priority</div></div>
+          <div style="font-weight:bold; color:var(--primary);">PKR 600</div>
+        </div>
+
+        <div class="vip-plan-card" onclick="selectVipPlan('1 Year', 'PKR 1000', 'Fire Frame')">
+          <div><strong>1 Year VIP (Level 3)</strong><div style="font-size:0.7rem; color:var(--text-muted);">Fire Frame + VIP Badge</div></div>
+          <div style="font-weight:bold; color:var(--primary);">PKR 1000</div>
+        </div>
+
+        <div class="vip-plan-card" onclick="selectVipPlan('2 Years', 'PKR 1800', 'Elite Crown')">
+          <div><strong>2 Years Elite (Level 5)</strong><div style="font-size:0.7rem; color:var(--text-muted);">Crown Frame + All Perks</div></div>
+          <div style="font-weight:bold; color:var(--primary);">PKR 1800</div>
+        </div>
       </div>
 
-      <div style="background:var(--sidebar-bg); padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid var(--border-color); font-size:0.8rem;">
-        <strong>Method 2: Manual Payment Upgrade (PKR 500)</strong>
-        <p style="color:var(--text-muted); margin:4px 0 8px 0;">Send payment to any account below and enter TID for manual admin approval:</p>
-        <ul style="list-style:none; line-height:1.6; font-size:0.75rem;">
-          <li>🟢 <strong>Easypaisa:</strong> 03379827882</li>
-          <li>🔴 <strong>JazzCash:</strong> 03705519562</li>
-          <li>🔵 <strong>SadaPay:</strong> 03705519562</li>
-        </ul>
+      <div style="background:var(--sidebar-bg); padding:10px; border-radius:12px; margin-bottom:12px; border:1px solid var(--border-color); font-size:0.8rem;">
+        <strong>💳 Payment Accounts</strong>
+        <p style="color:var(--text-muted); margin:4px 0;">Easypaisa / JazzCash / SadaPay: <strong>03379827882</strong></p>
       </div>
 
       <form id="vip-payment-form">
-        <div class="form-group"><label>Username</label><input type="text" id="vip-username-input" readonly style="opacity:0.7;"></div>
+        <div class="form-group"><label>Selected Plan</label><input type="text" id="selected-plan-input" readonly value="1 Month VIP (PKR 150)"></div>
         <div class="form-group"><label>Payment Method</label>
           <select id="vip-method-select">
             <option value="Easypaisa">Easypaisa (03379827882)</option>
@@ -277,8 +306,27 @@
         </div>
         <div class="form-group"><label>Sender Account Number</label><input type="text" id="vip-sender-acc" required placeholder="03XXXXXXXXX"></div>
         <div class="form-group"><label>Transaction TID / Ref ID</label><input type="text" id="vip-tid-input" required placeholder="Transaction ID"></div>
-        <button type="submit" class="btn">Submit for Manual Admin Approval</button>
+        <button type="submit" class="btn">Submit for Instant Activation</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Automated Payment Receipt Modal -->
+  <div id="vip-receipt-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align:center;">
+      <div style="font-size:3rem; color:#25d366; margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div>
+      <h3 style="margin-bottom:8px; color:var(--primary);">VIP Payment Receipt</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;">Prime Solutions Official Transaction Receipt</p>
+      
+      <div style="background:var(--sidebar-bg); padding:15px; border-radius:12px; text-align:left; font-size:0.85rem; margin-bottom:15px; border:1px solid var(--border-color); line-height:1.6;">
+        <div>👤 <strong>User:</strong> <span id="receipt-username"></span></div>
+        <div>👑 <strong>VIP Plan:</strong> <span id="receipt-plan"></span></div>
+        <div>💰 <strong>Amount Paid:</strong> <span id="receipt-amount"></span></div>
+        <div>💳 <strong>Method:</strong> <span id="receipt-method"></span></div>
+        <div>#️⃣ <strong>TID:</strong> <span id="receipt-tid"></span></div>
+        <div>📅 <strong>Date:</strong> <span id="receipt-date"></span></div>
+      </div>
+      <button class="btn" onclick="closeModal('vip-receipt-modal')">Done & Enjoy VIP Perks</button>
     </div>
   </div>
 
@@ -364,28 +412,31 @@
     <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="document.getElementById('global-broadcast-banner').classList.add('hidden')"></i>
   </div>
 
-  <!-- Auth Overlay -->
+  <!-- Modern Glassmorphic Auth Overlay -->
   <div id="auth-overlay" class="modal-overlay">
-    <div class="modal-content">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 2.5rem; color: var(--primary); margin-bottom: 5px; text-shadow: 0 0 15px var(--primary-glow);"><i class="fa-solid fa-comments"></i></div>
-        <h2 style="font-size: 1.4rem;">PrimeTalk Enterprise</h2>
-        <p style="font-size: 0.75rem; color: var(--text-muted);">Modern Glassmorphic Secure E2EE Messenger</p>
-      </div>
+    <div class="modal-content" style="max-width:380px; text-align:center;">
+      <div style="font-size: 3rem; color: var(--primary); margin-bottom: 8px; text-shadow: 0 0 20px var(--primary-glow);"><i class="fa-solid fa-comments"></i></div>
+      <h2 style="font-size: 1.5rem; font-weight:700; margin-bottom:4px;">PrimeTalk Enterprise</h2>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom:20px;">Secure E2EE Messenger & Super App</p>
 
-      <button id="google-login-btn" class="btn btn-google"><i class="fa-brands fa-google"></i> Continue with Google</button>
-      <div style="text-align: center; margin: 12px 0; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px;">OR EMAIL LOGIN</div>
+      <button id="google-login-btn" class="btn btn-google" style="width:100%;"><i class="fa-brands fa-google"></i> Continue with Google</button>
       
-      <form id="auth-form">
+      <div style="display:flex; align-items:center; margin:16px 0; color:var(--text-muted); font-size:0.75rem;">
+        <div style="flex:1; height:1px; background:var(--border-color);"></div>
+        <span style="padding:0 10px; letter-spacing:1px;">OR EMAIL</span>
+        <div style="flex:1; height:1px; background:var(--border-color);"></div>
+      </div>
+      
+      <form id="auth-form" style="text-align:left;">
         <div class="form-group"><label>Email Address</label><input type="email" id="auth-email" required placeholder="name@domain.com"></div>
         <div class="form-group"><label>Password</label><input type="password" id="auth-password" required placeholder="••••••••"></div>
         
         <div style="display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 0.75rem; color: var(--text-muted);">
           <input type="checkbox" id="terms-check" required style="width: 14px; height: 14px;">
-          <label for="terms-check" style="margin: 0; cursor: pointer;">I agree to Terms & Conditions and Privacy Policy</label>
+          <label for="terms-check" style="margin: 0; cursor: pointer;">I agree to Terms & Conditions</label>
         </div>
 
-        <button type="submit" class="btn">Login / Register</button>
+        <button type="submit" class="btn" style="width:100%;">Login / Register</button>
       </form>
       <div style="text-align: center; margin-top: 15px; font-size: 0.7rem; color: var(--text-muted);">
         Prime Solutions | Muhammad Nazim
@@ -400,6 +451,12 @@
       <form id="profile-setup-form">
         <div class="form-group"><label>Full Name</label><input type="text" id="setup-name" required placeholder="Muhammad Nazim"></div>
         <div class="form-group"><label>Unique Username (e.g. nazim_dev)</label><input type="text" id="setup-username" required placeholder="nazim_dev"></div>
+        <div class="form-group"><label>Account Type</label>
+          <select id="setup-account-type">
+            <option value="normal">Normal User (Free)</option>
+            <option value="business">Business Account (Company Tools & API)</option>
+          </select>
+        </div>
         <div class="form-group">
           <label>Profile Picture (Upload from Device)</label>
           <input type="file" id="setup-avatar-file" accept="image/*" style="background:var(--sidebar-bg); padding:8px;">
@@ -436,7 +493,7 @@
       </div>
       <h4 id="group-info-title" style="color:var(--primary); margin-bottom:10px;">Group</h4>
       
-      <div style="background:var(--sidebar-bg); padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color);">
+      <div style="background:var(--sidebar-bg); padding:10px; border-radius:12px; margin-bottom:12px; border:1px solid var(--border-color);">
         <strong style="font-size:0.8rem; color:var(--primary); display:block; margin-bottom:4px;"><i class="fa-solid fa-bullhorn"></i> Group Announcement Board</strong>
         <p id="group-announcement-text" style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">No announcements posted yet.</p>
         <div id="admin-announcement-area" class="hidden">
@@ -482,7 +539,7 @@
       </div>
       <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Manage devices where your PrimeTalk account is logged in:</p>
       <div id="sessions-list-box" style="margin-bottom:15px;">
-        <div style="background:var(--sidebar-bg); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border-color);">
+        <div style="background:var(--sidebar-bg); padding:10px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border-color);">
           <div><strong>Current Browser Session</strong><div style="font-size:0.7rem; color:var(--primary);">Active Now • Web Client</div></div>
           <span style="font-size:0.75rem; color:var(--accent-badge);">This Device</span>
         </div>
@@ -522,13 +579,15 @@
     <div id="pane-chats" class="pane-content">
       <div class="status-bar-container" id="status-stories-bar">
         <div class="status-item" onclick="openModal('create-status-modal')">
-          <div class="avatar" style="background:var(--card-bg); border:1px dashed var(--primary);"><i class="fa-solid fa-plus"></i></div>
+          <div class="avatar-container">
+            <div class="avatar" style="background:var(--card-bg); border:1px dashed var(--primary);"><i class="fa-solid fa-plus"></i></div>
+          </div>
           <span>My Status</span>
         </div>
       </div>
 
       <div style="padding: 10px 16px; background: var(--sidebar-bg); border-bottom: 1px solid var(--border-color);">
-        <input type="text" placeholder="Search chats..." id="chat-filter-input" oninput="filterChatsList(this.value)" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); font-size:0.85rem; outline:none;">
+        <input type="text" placeholder="Search chats..." id="chat-filter-input" oninput="filterChatsList(this.value)" style="width:100%; padding:8px 12px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); font-size:0.85rem; outline:none;">
       </div>
       <div style="padding: 6px 16px; background:var(--sidebar-bg); display:flex; justify-content:space-between; font-size:0.8rem; color:var(--primary); border-bottom:1px solid var(--border-color);">
         <span style="cursor:pointer;" onclick="openArchivedModal()"><i class="fa-solid fa-box-archive"></i> Archived Chats</span>
@@ -577,36 +636,36 @@
         <button class="gallery-tab-btn" onclick="switchGalleryTab('links')">Links</button>
       </div>
       <div id="shared-media-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;">
-        <div style="background:var(--card-bg); padding:20px; border-radius:10px; text-align:center; color:var(--text-muted); font-size:0.75rem; grid-column: span 2;">No vault files stored yet</div>
+        <div style="background:var(--card-bg); padding:20px; border-radius:12px; text-align:center; color:var(--text-muted); font-size:0.75rem; grid-column: span 2;">No vault files stored yet</div>
       </div>
     </div>
 
-    <!-- PANE 6: ADMIN DASHBOARD & MODERATION (Hidden unless admin) -->
+    <!-- PANE 6: ADMIN DASHBOARD & MODERATION -->
     <div id="pane-admin" class="pane-content hidden" style="padding: 16px;">
       <h3 style="color:var(--primary); margin-bottom:12px;"><i class="fa-solid fa-shield-halved"></i> Admin & Moderation Panel</h3>
       
-      <div style="background:var(--card-bg); padding:12px; border-radius:10px; margin-bottom:14px; border:1px solid var(--border-color);">
+      <div style="background:var(--card-bg); padding:12px; border-radius:12px; margin-bottom:14px; border:1px solid var(--border-color);">
         <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-chart-line"></i> Live Platform Analytics</h4>
         <div id="admin-stats-box" style="font-size:0.8rem; color:var(--text-muted); line-height:1.6;">Loading platform stats...</div>
       </div>
 
-      <div style="background:var(--card-bg); padding:12px; border-radius:10px; margin-bottom:14px; border:1px solid var(--border-color);">
+      <div style="background:var(--card-bg); padding:12px; border-radius:12px; margin-bottom:14px; border:1px solid var(--border-color);">
         <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-bullhorn"></i> Broadcast Push Notification</h4>
         <input type="text" id="admin-broadcast-input" placeholder="Type global alert message..." style="margin-bottom:8px; font-size:0.8rem; padding:8px;">
         <button class="btn btn-sm" style="width:100%;" onclick="sendAdminBroadcast()">Send Global Broadcast</button>
       </div>
 
-      <div style="background:var(--card-bg); padding:12px; border-radius:10px; margin-bottom:14px; border:1px solid var(--border-color);">
+      <div style="background:var(--card-bg); padding:12px; border-radius:12px; margin-bottom:14px; border:1px solid var(--border-color);">
         <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-user-gear"></i> User RBAC & Ban Controls</h4>
         <div id="admin-users-list" style="max-height:180px; overflow-y:auto; font-size:0.8rem;">Loading users...</div>
       </div>
 
-      <div style="background:var(--card-bg); padding:12px; border-radius:10px; margin-bottom:14px; border:1px solid var(--border-color);">
+      <div style="background:var(--card-bg); padding:12px; border-radius:12px; margin-bottom:14px; border:1px solid var(--border-color);">
         <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i> VIP Requests Manual Approval</h4>
         <div id="admin-vip-requests-list" style="max-height:160px; overflow-y:auto; font-size:0.8rem; color:var(--text-muted);">Loading VIP requests...</div>
       </div>
 
-      <div style="background:var(--card-bg); padding:12px; border-radius:10px; border:1px solid var(--border-color);">
+      <div style="background:var(--card-bg); padding:12px; border-radius:12px; border:1px solid var(--border-color);">
         <h4 style="font-size:0.85rem; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-triangle-exclamation"></i> Reported Content Moderation Queue</h4>
         <div id="admin-reports-list" style="font-size:0.8rem; color:var(--text-muted);">No reported content.</div>
       </div>
@@ -615,12 +674,17 @@
     <!-- PANE 7: PROFILE & THEME BUILDER SETTINGS -->
     <div id="pane-profile" class="pane-content hidden" style="padding: 20px;">
       <div style="text-align: center; margin-bottom: 20px;">
-        <div class="avatar" id="profile-page-avatar" style="width: 70px; height: 70px; font-size: 1.5rem; margin: 0 auto 10px auto;">PT</div>
-        <h3 id="profile-page-name">Loading...</h3>
+        <div style="display:inline-block;" id="profile-avatar-wrapper" class="avatar-container">
+          <div class="avatar" id="profile-page-avatar" style="width: 70px; height: 70px; font-size: 1.5rem; margin: 0 auto;">PT</div>
+        </div>
+        <h3 id="profile-page-name" style="margin-top:10px;">Loading...</h3>
         <p id="profile-page-username" style="font-size: 0.85rem; color: var(--primary);">@username</p>
-        <button class="btn btn-sm" style="margin-top:8px; background:transparent; border:1px solid var(--blue-tick); color:var(--blue-tick);" onclick="openVIPModal()"><i class="fa-solid fa-circle-check"></i> Get VIP Verified Badge</button>
+        <div id="profile-account-type-badge" style="margin-top:6px; display:inline-block;"></div>
+        <div>
+          <button class="btn btn-sm" style="margin-top:8px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; font-weight:bold;" onclick="openVIPModal()"><i class="fa-solid fa-crown"></i> Buy Low-Cost VIP Plans & Levels</button>
+        </div>
       </div>
-      <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; border: 1px solid var(--border-color);">
+      <div style="background: var(--card-bg); padding: 15px; border-radius: 16px; margin-bottom: 20px; font-size: 0.85rem; border: 1px solid var(--border-color);">
         <div class="form-group" style="margin-bottom: 12px;">
           <label>Update Full Name</label>
           <input type="text" id="edit-profile-name" placeholder="Your Name" onchange="updateProfileInfoText()">
@@ -688,9 +752,11 @@
     <div id="chat-screen-pane" class="chat-screen hidden">
       <div class="chat-screen-header">
         <i class="fa-solid fa-arrow-left" style="cursor:pointer; font-size:1.1rem;" onclick="closeActiveChat()"></i>
-        <div class="avatar" id="active-chat-avatar" style="width: 38px; height: 38px; font-size: 0.85rem;">
-          PT
-          <div id="active-dot" class="online-dot offline-dot"></div>
+        <div class="avatar-container" style="width:38px; height:38px;" id="active-chat-avatar-wrapper">
+          <div class="avatar" id="active-chat-avatar" style="width: 38px; height: 38px; font-size: 0.85rem;">
+            PT
+            <div id="active-dot" class="online-dot offline-dot"></div>
+          </div>
         </div>
         <div style="flex:1; min-width: 90px; overflow:hidden;" onclick="handleHeaderTitleClick()">
           <h4 id="active-chat-name" style="font-size: 0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Chat Name</h4>
@@ -700,6 +766,7 @@
         <div style="display:flex; align-items:center; gap:6px;">
           <div class="swipe-indicator">Swipe <i class="fa-solid fa-arrow-right"></i></div>
           <div class="header-actions-scroll">
+            <button class="header-action-btn" title="Clear Chat History" onclick="clearCurrentChatMessages()"><i class="fa-solid fa-broom"></i></button>
             <button class="header-action-btn" title="Share Contact Card" onclick="shareContactCard()"><i class="fa-solid fa-address-card"></i></button>
             <button class="header-action-btn" title="Archive Chat" onclick="toggleArchiveCurrentChat()"><i class="fa-solid fa-box-archive"></i></button>
             <button class="header-action-btn" title="Create Kanban Task" onclick="promptCreateTask()"><i class="fa-solid fa-square-check"></i></button>
@@ -756,7 +823,7 @@
         <button class="action-icon-btn" onclick="document.getElementById('media-file-input').click()"><i class="fa-solid fa-image"></i></button>
         <button class="action-icon-btn" onclick="document.getElementById('doc-file-input').click()"><i class="fa-solid fa-paperclip"></i></button>
         <button class="action-icon-btn" id="voice-record-btn" onclick="toggleVoiceRecording()"><i class="fa-solid fa-microphone"></i></button>
-        <input type="text" class="input-field" id="message-input" placeholder="Type a message..." oninput="handleTypingInput()" onkeypress="handleKeyPress(event)">
+        <input type="text" class="input-field" id="message-input" placeholder="Type a message or use @username to mention..." oninput="handleTypingInput()" onkeypress="handleKeyPress(event)">
         <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>
@@ -813,6 +880,7 @@
     
     let peerConnection = null, localStream = null, remoteStream = null;
     let incomingCallData = null;
+    let typingTimeout = null;
     const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
     window.openModal = id => document.getElementById(id).classList.remove('hidden');
@@ -828,22 +896,36 @@
       }
     };
 
-    window.sendLiveLocation = function() {
-      if(navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          const mapLink = `https://maps.google.com/?q=${lat},${lon}`;
-          sendMsgPayload({ text: `📍 Live GPS Location: ${mapLink}`, type: 'text' });
-        }, () => alert('Unable to retrieve your location.'));
-      } else {
-        alert('Geolocation is not supported by your browser.');
+    window.clearCurrentChatMessages = async function() {
+      if(!activeChatRoom) return;
+      if(confirm("Are you sure you want to clear all messages in this chat?")) {
+        const roomId = activeChatRoom.isGroup ? activeChatRoom.id : (currentUser.uid < activeChatRoom.id ? `${currentUser.uid}_${activeChatRoom.id}` : `${activeChatRoom.id}_${currentUser.uid}`);
+        const endpoint = activeChatRoom.isGroup ? `group_messages/${roomId}` : `direct_messages/${roomId}`;
+        await remove(ref(db, endpoint));
+        alert('Chat history cleared successfully!');
       }
     };
 
-    window.updateDisappearingTimer = sec => { 
-      disappearingTimerSec = parseInt(sec); 
-      alert(`Disappearing messages set to ${sec} seconds.`); 
+    window.handleTypingInput = function() {
+      if(!activeChatRoom || !currentUser) return;
+      const roomId = activeChatRoom.isGroup ? activeChatRoom.id : (currentUser.uid < activeChatRoom.id ? `${currentUser.uid}_${activeChatRoom.id}` : `${activeChatRoom.id}_${currentUser.uid}`);
+      const typingRef = ref(db, `typing/${roomId}/${currentUser.uid}`);
+      set(typingRef, true);
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        set(typingRef, false);
+      }, 2000);
+    };
+
+    window.toggleEmojiPicker = function() {
+      document.getElementById('emoji-picker-box').classList.toggle('hidden');
+    };
+
+    window.insertEmoji = function(emoji) {
+      const input = document.getElementById('message-input');
+      input.value += emoji;
+      document.getElementById('emoji-picker-box').classList.add('hidden');
+      input.focus();
     };
 
     window.toggleAppTheme = function() {
@@ -904,27 +986,80 @@
     };
 
     window.openVIPModal = function() {
-      if(currentUserProfile) {
-        document.getElementById('vip-username-input').value = '@' + currentUserProfile.username;
-        const count = currentUserProfile.invitesCount || 0;
-        document.getElementById('invites-progress-text').innerText = `Invites Progress: ${count} / 10`;
-      }
       openModal('vip-verify-modal');
+      checkVipStatusAndTimer();
     };
+
+    window.selectVipPlan = function(planName, price, frameType) {
+      document.getElementById('selected-plan-input').value = `${planName} (${price}) - Frame: ${frameType}`;
+      alert(`Selected ${planName} plan! Fill details below and submit.`);
+    };
+
+    function checkVipStatusAndTimer() {
+      if(!currentUserProfile) return;
+      const box = document.getElementById('vip-active-timer-box');
+      const timerSpan = document.getElementById('vip-countdown-timer');
+
+      if(currentUserProfile.isVip && currentUserProfile.vipExpiresAt) {
+        box.classList.remove('hidden');
+        const interval = setInterval(() => {
+          const distance = currentUserProfile.vipExpiresAt - Date.now();
+          if(distance < 0) {
+            clearInterval(interval);
+            timerSpan.innerText = 'EXPIRED';
+          } else {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            timerSpan.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+          }
+        }, 1000);
+      } else {
+        box.classList.add('hidden');
+      }
+    }
 
     document.getElementById('vip-payment-form').addEventListener('submit', async e => {
       e.preventDefault();
+      const planStr = document.getElementById('selected-plan-input').value;
       const method = document.getElementById('vip-method-select').value;
       const senderAcc = document.getElementById('vip-sender-acc').value.trim();
       const tid = document.getElementById('vip-tid-input').value.trim();
 
-      await push(ref(db, 'vip_requests'), {
-        uid: currentUser.uid, username: currentUserProfile.username, name: currentUserProfile.name,
-        method, senderAcc, tid, status: 'pending', timestamp: serverTimestamp()
+      let durationDays = 30;
+      let vipLevel = 1;
+      let frame = 'frame-gold';
+
+      if(planStr.includes('6 Months')) { durationDays = 180; vipLevel = 2; frame = 'frame-diamond'; }
+      else if(planStr.includes('1 Year')) { durationDays = 365; vipLevel = 3; frame = 'frame-fire'; }
+      else if(planStr.includes('2 Years')) { durationDays = 730; vipLevel = 5; frame = 'frame-gold'; }
+
+      const expiresAt = Date.now() + (durationDays * 24 * 60 * 60 * 1000);
+      const priceText = planStr.split('(')[1].split(')')[0];
+
+      await update(ref(db, `users/${currentUser.uid}`), {
+        isVip: true, accountType: 'vip', vipLevel, vipFrame: frame, vipExpiresAt: expiresAt
       });
 
-      alert('VIP Verification Request Submitted! Pending Manual Admin Approval.');
+      currentUserProfile.isVip = true;
+      currentUserProfile.vipLevel = vipLevel;
+      currentUserProfile.vipFrame = frame;
+      currentUserProfile.vipExpiresAt = expiresAt;
+
       closeModal('vip-verify-modal');
+
+      // Show Automated Receipt
+      document.getElementById('receipt-username').innerText = '@' + currentUserProfile.username;
+      document.getElementById('receipt-plan').innerText = planStr.split('(')[0];
+      document.getElementById('receipt-amount').innerText = priceText;
+      document.getElementById('receipt-method').innerText = method;
+      document.getElementById('receipt-tid').innerText = tid;
+      document.getElementById('receipt-date').innerText = new Date().toLocaleString();
+      openModal('vip-receipt-modal');
+
+      // Refresh profile view
+      location.reload();
     });
 
     onAuthStateChanged(auth, async user => {
@@ -958,8 +1093,19 @@
           document.getElementById('profile-setup-modal').classList.add('hidden');
           
           let blueTickBadge = currentUserProfile.isVip ? ' <i class="fa-solid fa-circle-check vip-blue-tick"></i>' : '';
-          document.getElementById('profile-page-name').innerHTML = currentUserProfile.name + blueTickBadge;
+          let levelBadge = currentUserProfile.isVip ? ` <span class="vip-level-badge">LVL ${currentUserProfile.vipLevel || 1}</span>` : '';
+          let bizBadge = currentUserProfile.accountType === 'business' ? ' <span class="business-badge"><i class="fa-solid fa-briefcase"></i> BUSINESS</span>' : '';
+          
+          document.getElementById('profile-page-name').innerHTML = currentUserProfile.name + blueTickBadge + levelBadge + bizBadge;
           document.getElementById('profile-page-username').innerText = '@' + currentUserProfile.username;
+          
+          if(currentUserProfile.isVip && currentUserProfile.vipFrame) {
+            document.getElementById('profile-avatar-wrapper').className = `avatar-container ${currentUserProfile.vipFrame}`;
+          }
+
+          let typeLabel = currentUserProfile.accountType === 'business' ? '🏢 Business Enterprise Account' : (currentUserProfile.isVip ? `🌟 VIP Level ${currentUserProfile.vipLevel || 1} Member` : '👤 Normal Free User');
+          document.getElementById('profile-account-type-badge').innerHTML = `<span style="font-size:0.75rem; background:var(--sidebar-bg); padding:4px 10px; border-radius:10px; border:1px solid var(--border-color); color:var(--primary);">${typeLabel}</span>`;
+
           document.getElementById('edit-profile-name').value = currentUserProfile.name;
           if(currentUserProfile.avatar) {
             document.getElementById('profile-page-avatar').innerHTML = `<img src="${currentUserProfile.avatar}" />`;
@@ -1036,6 +1182,7 @@
       e.preventDefault();
       const name = document.getElementById('setup-name').value;
       const username = document.getElementById('setup-username').value.toLowerCase().trim();
+      const accountType = document.getElementById('setup-account-type').value;
       const fileInput = document.getElementById('setup-avatar-file');
       let avatar = '';
 
@@ -1047,8 +1194,9 @@
         });
       }
 
-      const profile = { uid: currentUser.uid, email: currentUser.email, name, username, avatar, bio: "Hey there! Using PrimeTalk Enterprise", readReceipts: true, isVip: false, invitesCount: 0, role: currentUser.email === 'nazimkhan01123@gmail.com' ? 'admin' : 'user', isProfileComplete: true, createdAt: Date.now() };
+      const profile = { uid: currentUser.uid, email: currentUser.email, name, username, accountType, avatar, bio: "Hey there! Using PrimeTalk Enterprise", readReceipts: true, isVip: false, vipLevel: 0, vipExpiresAt: 0, role: currentUser.email === 'nazimkhan01123@gmail.com' ? 'admin' : 'user', isProfileComplete: true, createdAt: Date.now() };
       await set(ref(db, `users/${currentUser.uid}`), profile);
+      
       currentUserProfile = profile;
       document.getElementById('profile-setup-modal').classList.add('hidden');
       location.reload();
@@ -1070,7 +1218,7 @@
           const u = users[uId];
           usersList.innerHTML += `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border-color);">
-              <div><strong>${u.name}</strong> (@${u.username})<br><span style="color:var(--primary); font-size:0.7rem;">Role: ${u.role || 'user'}</span></div>
+              <div><strong>${u.name}</strong> (@${u.username})<br><span style="color:var(--primary); font-size:0.7rem;">Role: ${u.role || 'user'} | Type: ${u.accountType || 'normal'}</span></div>
               <div style="display:flex; gap:4px;">
                 <button class="btn btn-sm" onclick="promoteUserRole('${uId}', '${u.role === 'admin' ? 'user' : 'admin'}')">${u.role === 'admin' ? 'Demote' : 'Make Admin'}</button>
                 <button class="btn btn-sm btn-danger" onclick="banUserAccount('${uId}')">Ban</button>
@@ -1085,21 +1233,14 @@
         if(reqs) {
           Object.keys(reqs).forEach(rKey => {
             const req = reqs[rKey];
-            if(req.status === 'pending') {
-              vipReqList.innerHTML += `
-                <div style="background:var(--sidebar-bg); padding:8px; border-radius:6px; margin-bottom:6px; font-size:0.75rem;">
-                  <strong>${req.name}</strong> (@${req.username})<br>
-                  Method: ${req.method} | Sender: ${req.senderAcc}<br>
-                  TID: <strong style="color:var(--primary);">${req.tid}</strong>
-                  <div style="display:flex; gap:6px; margin-top:6px;">
-                    <button class="btn btn-sm" style="flex:1; background:#25d366;" onclick="approveVipRequest('${rKey}', '${req.uid}')">Approve VIP</button>
-                    <button class="btn btn-sm btn-danger" style="flex:1;" onclick="rejectVipRequest('${rKey}')">Reject</button>
-                  </div>
-                </div>`;
-            }
+            vipReqList.innerHTML += `
+              <div style="background:var(--sidebar-bg); padding:8px; border-radius:8px; margin-bottom:6px; font-size:0.75rem;">
+                <strong>${req.name}</strong> (@${req.username})<br>
+                TID: <strong style="color:var(--primary);">${req.tid}</strong>
+              </div>`;
           });
         } else {
-          vipReqList.innerHTML = 'No pending VIP requests.';
+          vipReqList.innerHTML = 'No VIP requests.';
         }
       });
 
@@ -1110,7 +1251,7 @@
           Object.keys(reps).forEach(rKey => {
             const r = reps[rKey];
             reportsList.innerHTML += `
-              <div style="background:var(--sidebar-bg); padding:8px; border-radius:6px; margin-bottom:6px;">
+              <div style="background:var(--sidebar-bg); padding:8px; border-radius:8px; margin-bottom:6px;">
                 <strong>Reason:</strong> ${r.reason}<br><span style="font-size:0.7rem; color:var(--text-muted);">Reported User ID: ${r.targetUid}</span>
                 <button class="btn btn-sm btn-danger" style="margin-top:4px; width:100%;" onclick="dismissReport('${rKey}')">Dismiss Report</button>
               </div>`;
@@ -1119,17 +1260,6 @@
           reportsList.innerHTML = 'No reported content.';
         }
       });
-    };
-
-    window.approveVipRequest = async function(reqKey, targetUid) {
-      await update(ref(db, `users/${targetUid}`), { isVip: true });
-      await update(ref(db, `vip_requests/${reqKey}`), { status: 'approved' });
-      alert('VIP badge approved successfully for the user!');
-    };
-
-    window.rejectVipRequest = async function(reqKey) {
-      await update(ref(db, `vip_requests/${reqKey}`), { status: 'rejected' });
-      alert('VIP request rejected.');
     };
 
     window.promoteUserRole = async function(uid, newRole) {
@@ -1148,7 +1278,7 @@
       const text = document.getElementById('admin-broadcast-input').value.trim();
       if(!text) return;
       await set(ref(db, 'global_announcement'), { text, timestamp: serverTimestamp() });
-      alert('Global broadcast push notification sent to all active users!');
+      alert('Global broadcast push notification sent!');
       document.getElementById('admin-broadcast-input').value = '';
     };
 
@@ -1158,7 +1288,7 @@
       await push(ref(db, 'reports'), {
         reporterUid: currentUser.uid, targetUid: activeChatRoom.id, reason, timestamp: serverTimestamp()
       });
-      alert('Content reported to administrator successfully!');
+      alert('Content reported to administrator!');
     };
 
     window.dismissReport = async function(reportKey) {
@@ -1183,7 +1313,7 @@
         await update(ref(db, `users/${currentUser.uid}`), { avatar: avatarUrl });
         currentUserProfile.avatar = avatarUrl;
         document.getElementById('profile-page-avatar').innerHTML = `<img src="${avatarUrl}" />`;
-        alert('Profile picture updated successfully from storage!');
+        alert('Profile picture updated successfully!');
         loadChatsAndGroups();
       };
       reader.readAsDataURL(file);
@@ -1210,7 +1340,7 @@
         });
       }
 
-      if(!caption && !mediaUrl) { alert('Please enter text or choose an image/video for status!'); return; }
+      if(!caption && !mediaUrl) { alert('Please enter text or choose media for status!'); return; }
 
       const statusRef = push(ref(db, `statuses/${currentUser.uid}`));
       await set(statusRef, {
@@ -1230,7 +1360,9 @@
         const data = snap.val();
         bar.innerHTML = `
           <div class="status-item" onclick="openModal('create-status-modal')">
-            <div class="avatar" style="background:var(--card-bg); border:1px dashed var(--primary);"><i class="fa-solid fa-plus"></i></div>
+            <div class="avatar-container">
+              <div class="avatar" style="background:var(--card-bg); border:1px dashed var(--primary);"><i class="fa-solid fa-plus"></i></div>
+            </div>
             <span>My Status</span>
           </div>`;
 
@@ -1243,10 +1375,8 @@
               const latest = activeStories[activeStories.length - 1];
               bar.innerHTML += `
                 <div class="status-item" onclick="viewUserStatusStory('${userUid}', '${latest.id}', '${latest.userName}', '${encodeURIComponent(JSON.stringify(activeStories))}')">
-                  <div class="story-ring-wrapper">
-                    <div class="story-ring-inner">
-                      <div class="avatar" style="background:#8b5cf6;">${latest.userName.substring(0,2).toUpperCase()}</div>
-                    </div>
+                  <div class="avatar-container">
+                    <div class="avatar" style="background:#8b5cf6;">${latest.userName.substring(0,2).toUpperCase()}</div>
                   </div>
                   <span>${latest.userName}</span>
                 </div>`;
@@ -1265,31 +1395,63 @@
       let mediaContent = '';
       if(latest.mediaUrl) {
         if(latest.mediaType === 'video') {
-          mediaContent = `<video src="${latest.mediaUrl}" controls autoplay style="max-width:100%; max-height:50vh; border-radius:10px; margin-bottom:10px;"></video>`;
+          mediaContent = `<video src="${latest.mediaUrl}" controls autoplay style="max-width:100%; max-height:40vh; border-radius:10px; margin-bottom:8px;"></video>`;
         } else {
-          mediaContent = `<img src="${latest.mediaUrl}" style="max-width:100%; max-height:50vh; border-radius:10px; margin-bottom:10px;"/>`;
+          mediaContent = `<img src="${latest.mediaUrl}" style="max-width:100%; max-height:40vh; border-radius:10px; margin-bottom:8px;"/>`;
         }
       }
+
+      let viewsHtml = '<div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;" id="status-views-box">Loading views...</div>';
+      let reactionsHtml = '<div style="font-size:0.75rem; color:var(--primary); margin-top:4px;" id="status-reactions-box">Loading reactions...</div>';
 
       const box = document.createElement('div');
       box.className = 'lightbox-modal';
       box.id = 'status-viewer-modal';
       box.innerHTML = `
-        <div style="text-align:center; max-width:90%; width:400px; background:var(--card-bg); padding:20px; border-radius:16px; border:1px solid var(--border-color);">
-          <h3 style="color:var(--primary); margin-bottom:10px;">${userName}'s Status</h3>${mediaContent}
-          <p style="font-size:1.05rem; color:white; margin-bottom:15px;">${escapeHTML(latest.caption || '')}</p>
+        <div style="text-align:center; max-width:90%; width:400px; background:var(--card-bg); padding:20px; border-radius:20px; border:1px solid var(--border-color); max-height:90vh; overflow-y:auto;">
+          <h3 style="color:var(--primary); margin-bottom:8px;">${userName}'s Status</h3>${mediaContent}
+          <p style="font-size:0.95rem; color:white; margin-bottom:12px;">${escapeHTML(latest.caption || '')}</p>
           
-          <div style="display:flex; justify-content:center; gap:12px; margin-bottom:12px; font-size:1.5rem;">
+          <div style="display:flex; justify-content:center; gap:10px; margin-bottom:10px; font-size:1.3rem;">
             <span style="cursor:pointer;" onclick="reactToStatus('${statusId}', '❤️')">❤️</span>
             <span style="cursor:pointer;" onclick="reactToStatus('${statusId}', '🔥')">🔥</span>
             <span style="cursor:pointer;" onclick="reactToStatus('${statusId}', '👏')">👏</span>
             <span style="cursor:pointer;" onclick="reactToStatus('${statusId}', '😂')">😂</span>
           </div>
 
-          <button class="btn btn-sm" style="margin-bottom:10px; width:100%;" onclick="replyToStatusDirectDM('${statusUserUid}', '${userName}', '${escapeHTML(latest.caption || '')}')"><i class="fa-solid fa-reply"></i> Reply via Message</button>
-          <button class="btn btn-sm btn-danger" onclick="document.getElementById('status-viewer-modal').remove()">Close</button>
+          ${reactionsHtml}
+          ${viewsHtml}
+
+          <button class="btn btn-sm" style="margin:10px 0 6px 0; width:100%;" onclick="replyToStatusDirectDM('${statusUserUid}', '${userName}', '${escapeHTML(latest.caption || '')}')"><i class="fa-solid fa-reply"></i> Reply via Message</button>
+          <button class="btn btn-sm btn-danger" style="width:100%;" onclick="document.getElementById('status-viewer-modal').remove()">Close</button>
         </div>`;
       document.body.appendChild(box);
+
+      onValue(ref(db, `status_views/${statusId}`), snap => {
+        const views = snap.val();
+        let vText = '👁️ Viewed by: ';
+        if(views) {
+          const names = Object.values(views).map(v => v.name);
+          vText += names.join(', ');
+        } else {
+          vText += 'No views yet';
+        }
+        const vBox = document.getElementById('status-views-box');
+        if(vBox) vBox.innerText = vText;
+      });
+
+      onValue(ref(db, `status_reactions/${statusId}`), snap => {
+        const reacts = snap.val();
+        let rText = '💬 Reactions: ';
+        if(reacts) {
+          const rList = Object.values(reacts).map(r => `${r.userName} (${r.emoji})`);
+          rText += rList.join(', ');
+        } else {
+          rText += 'No reactions yet';
+        }
+        const rBox = document.getElementById('status-reactions-box');
+        if(rBox) rBox.innerText = rText;
+      });
     };
 
     window.reactToStatus = async function(statusId, emoji) {
@@ -1462,11 +1624,15 @@
             found = true;
             let avatarHtml = u.avatar ? `<img src="${u.avatar}" />` : u.name.substring(0,2).toUpperCase();
             let blueTick = u.isVip ? ' <i class="fa-solid fa-circle-check vip-blue-tick"></i>' : '';
+            let levelBadge = u.isVip ? ` <span class="vip-level-badge">LVL ${u.vipLevel || 1}</span>` : '';
+            let bizBadge = u.accountType === 'business' ? ' <span class="business-badge"><i class="fa-solid fa-briefcase"></i> BUSINESS</span>' : '';
             container.innerHTML += `
               <div class="chat-item" style="justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <div class="avatar" style="background:#8b5cf6;">${avatarHtml}</div>
-                  <div><strong>${u.name}</strong>${blueTick}<div style="font-size:0.75rem; color:var(--text-muted);">@${u.username} •${u.bio || ''}</div></div>
+                  <div class="avatar-container ${u.vipFrame || ''}">
+                    <div class="avatar" style="background:#8b5cf6;">${avatarHtml}</div>
+                  </div>
+                  <div><strong>${u.name}</strong>${blueTick}${levelBadge}${bizBadge}<div style="font-size:0.75rem; color:var(--text-muted);">@${u.username} • ${u.bio || ''}</div></div>
                 </div>
                 <button class="btn btn-sm" onclick="sendFriendRequest('${u.uid}', '${u.name}', '${u.username}')">Send Request</button>
               </div>`;
@@ -1494,7 +1660,9 @@
             container.innerHTML += `
               <div class="chat-item" style="justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <div class="avatar" style="background:#3b82f6;">${req.name.substring(0,2).toUpperCase()}</div>
+                  <div class="avatar-container">
+                    <div class="avatar" style="background:#3b82f6;">${req.name.substring(0,2).toUpperCase()}</div>
+                  </div>
                   <div><strong>${req.name}</strong><div style="font-size:0.75rem; color:var(--text-muted);">@${req.username}</div></div>
                 </div>
                 <div style="display:flex; gap:6px;">
@@ -1541,15 +1709,19 @@
             const friendData = friendUserSnap.exists() ? friendUserSnap.val() : {};
             const friendAvatarHtml = friendData.avatar ? `<img src="${friendData.avatar}" />` : c.name.substring(0,2).toUpperCase();
             let blueTick = friendData.isVip ? ' <i class="fa-solid fa-circle-check vip-blue-tick"></i>' : '';
+            let levelBadge = friendData.isVip ? ` <span class="vip-level-badge">LVL ${friendData.vipLevel || 1}</span>` : '';
+            let bizBadge = friendData.accountType === 'business' ? ' <span class="business-badge"><i class="fa-solid fa-briefcase"></i> BUSINESS</span>' : '';
 
             const chatHtml = `
               <div class="chat-item" onclick="openActiveChat('${c.uid}', '${c.name}', false)">
-                <div class="avatar" style="background: #25d366;">
-                  ${friendAvatarHtml}
-                  <div id="chat-dot-${c.uid}" class="online-dot offline-dot"></div>
+                <div class="avatar-container ${friendData.vipFrame || ''}">
+                  <div class="avatar" style="background: #25d366;">
+                    ${friendAvatarHtml}
+                    <div id="chat-dot-${c.uid}" class="online-dot offline-dot"></div>
+                  </div>
                 </div>
                 <div style="flex:1;">
-                  <div style="font-size:0.95rem; font-weight:600;">${c.name}${blueTick}${isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary); font-size:0.75rem;"></i>' : ''}</div>
+                  <div style="font-size:0.95rem; font-weight:600;">${c.name}${blueTick}${levelBadge}${bizBadge}${isPinned ? '<i class="fa-solid fa-thumbtack" style="color:var(--primary); font-size:0.75rem;"></i>' : ''}</div>
                   <div style="font-size:0.8rem; color:var(--text-muted);">@${c.username} • Secure Chat</div>
                 </div>
               </div>`;
@@ -1577,7 +1749,9 @@
               const groupAvatarHtml = g.avatar ? `<img src="${g.avatar}" />` : '<i class="fa-solid fa-users"></i>';
               container.innerHTML += `
                 <div class="chat-item" onclick="openActiveChat('${g.id}', '${g.name}', true)">
-                  <div class="avatar" style="background: #3b82f6;">${groupAvatarHtml}</div>
+                  <div class="avatar-container">
+                    <div class="avatar" style="background: #3b82f6;">${groupAvatarHtml}</div>
+                  </div>
                   <div style="flex:1;">
                     <div style="font-size:0.95rem; font-weight:600;">${g.name} <span style="font-size:0.7rem; color:var(--primary);">(Enterprise Group)</span></div>
                     <div style="font-size:0.8rem; color:var(--text-muted);">Secure Team Room</div>
@@ -1605,7 +1779,9 @@
 
               container.innerHTML += `
                 <div class="chat-item">
-                  <div class="avatar" style="background:#3b82f6;"><i class="fa-solid ${icon}"></i></div>
+                  <div class="avatar-container">
+                    <div class="avatar" style="background:#3b82f6;"><i class="fa-solid ${icon}"></i></div>
+                  </div>
                   <div style="flex:1;">
                     <strong>${contactName}</strong>
                     <div style="font-size:0.75rem; color:var(--text-muted);">${arrowIcon} ${timeStr}</div>
@@ -1623,7 +1799,7 @@
       document.querySelectorAll('.gallery-tab-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       const grid = document.getElementById('shared-media-grid');
-      grid.innerHTML = `<div style="background:var(--card-bg); padding:20px; border-radius:10px; text-align:center; color:var(--text-muted); font-size:0.75rem; grid-column: span 2;">Showing vault files for ${category}...</div>`;
+      grid.innerHTML = `<div style="background:var(--card-bg); padding:20px; border-radius:12px; text-align:center; color:var(--text-muted); font-size:0.75rem; grid-column: span 2;">Showing vault files for ${category}...</div>`;
     };
 
     window.filterChatsList = function(keyword) {
@@ -1702,7 +1878,7 @@
         const starred = snap.val();
         Object.values(starred).forEach(m => {
           container.innerHTML += `
-            <div style="background:var(--sidebar-bg); padding:10px; border-radius:8px; margin-bottom:8px; border:1px solid var(--border-color);">
+            <div style="background:var(--sidebar-bg); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--border-color);">
               <div style="font-size:0.75rem; color:var(--primary); font-weight:bold;">${m.senderName}</div>
               <div style="font-size:0.85rem;">${escapeHTML(m.text)}</div>
             </div>`;
@@ -1999,17 +2175,30 @@
       
       if(isGroup) {
         document.getElementById('active-chat-avatar').innerHTML = '<i class="fa-solid fa-users"></i>';
+        document.getElementById('active-chat-avatar-wrapper').className = 'avatar-container';
       } else {
         const targetUserSnap = await get(ref(db, `users/${id}`));
         const targetUserData = targetUserSnap.exists() ? targetUserSnap.val() : {};
         const targetAvatarHtml = targetUserData.avatar ? `<img src="${targetUserData.avatar}" />` : name.substring(0,2).toUpperCase();
         document.getElementById('active-chat-avatar').innerHTML = `${targetAvatarHtml}<div id="active-dot" class="online-dot offline-dot"></div>`;
+        document.getElementById('active-chat-avatar-wrapper').className = `avatar-container ${targetUserData.vipFrame || ''}`;
       }
 
       document.getElementById('chat-screen-pane').classList.remove('hidden');
 
       const roomId = isGroup ? id : (currentUser.uid < id ? `${currentUser.uid}_${id}` : `${id}_${currentUser.uid}`);
       const msgBox = document.getElementById('messages-container');
+
+      onValue(ref(db, `typing/${roomId}`), snap => {
+        const typingBar = document.getElementById('typing-indicator-bar');
+        const typingData = snap.val() || {};
+        let isSomeoneTyping = false;
+        Object.keys(typingData).forEach(uId => {
+          if(uId !== currentUser.uid && typingData[uId]) isSomeoneTyping = true;
+        });
+        if(isSomeoneTyping) typingBar.style.display = 'block';
+        else typingBar.style.display = 'none';
+      });
 
       onValue(ref(db, `pinned_message/${roomId}`), snap => {
         const banner = document.getElementById('pinned-msg-banner');
@@ -2041,7 +2230,10 @@
               replyQuoteHtml = `<div style="background:rgba(0,0,0,0.2); border-left:3px solid var(--primary); padding:4px 8px; font-size:0.75rem; margin-bottom:4px; border-radius:4px;"><strong>${escapeHTML(m.replyTo.senderName)}</strong>: ${escapeHTML(m.replyTo.text)}</div>`;
             }
 
-            let content = escapeHTML(m.text);
+            let formattedText = escapeHTML(m.text);
+            formattedText = formattedText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color:#3b82f6; font-weight:bold; background:rgba(59,130,246,0.15); padding:1px 4px; border-radius:4px;">@$1</span>');
+
+            let content = formattedText;
             if(m.type === 'poll') {
               const opts = m.pollOptions || ['Option 1', 'Option 2'];
               content = `
@@ -2052,8 +2244,8 @@
               `;
             } else if(m.type === 'text' && (m.text.includes('http://') || m.text.includes('https://'))) {
               const url = m.text.match(/(https?:\/\/[^\s]+)/g)[0];
-              content = `${escapeHTML(m.text)}
-                <div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-color); padding:8px; border-radius:8px; margin-top:6px;">
+              content = `${formattedText}
+                <div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-color); padding:8px; border-radius:10px; margin-top:6px;">
                   <div style="font-weight:600; font-size:0.8rem; color:var(--primary); margin-bottom:2px;"><i class="fa-solid fa-globe"></i> Rich Web Preview</div>
                   <a href="${url}" target="_blank" style="font-size:0.75rem; color:#3b82f6; text-decoration:underline; word-break:break-all;">${url}</a>
                 </div>`;
@@ -2063,7 +2255,7 @@
               } else if(m.isViewOnce && !isMe && !m.viewed) {
                 content = `<button class="btn btn-sm" onclick="openViewOnceMedia('${roomId}', '${key}', '${m.mediaUrl}', '${msgEndpoint}')"><i class="fa-solid fa-eye"></i> Tap to View Once Photo ⏱️</button>`;
               } else {
-                content = `<img src="${m.mediaUrl}" onclick="openMediaLightbox('${m.mediaUrl}')" style="max-width:100%; border-radius:8px; display:block; margin-bottom:4px; cursor:pointer;"/><span style="font-size:0.85rem;">${escapeHTML(m.text)}</span>`;
+                content = `<img src="${m.mediaUrl}" onclick="openMediaLightbox('${m.mediaUrl}')" style="max-width:100%; border-radius:10px; display:block; margin-bottom:4px; cursor:pointer;"/><span style="font-size:0.85rem;">${formattedText}</span>`;
               }
             } else if(m.type === 'audio') {
               content = `
@@ -2082,7 +2274,13 @@
 
             let senderNameHTML = (isGroup && !isMe) ? `<div style="font-size:0.7rem; color:var(--primary); font-weight:bold; margin-bottom:2px;">${escapeHTML(m.senderName || 'User')}</div>` : '';
             
-            let editDeleteOptions = isMe ? `<div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px; display:flex; gap:8px;"><span style="cursor:pointer;" onclick="editMessagePrompt('${roomId}', '${key}', '${msgEndpoint}', '${escapeHTML(m.text)}')">Edit</span><span style="cursor:pointer; color:var(--danger);" onclick="deleteMessage('${roomId}', '${key}', '${msgEndpoint}')">Delete</span></div>` : '';
+            let editDeleteOptions = `<div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px; display:flex; gap:8px;"><span style="cursor:pointer; color:var(--primary);" onclick="prepareReplyMessage('${escapeHTML(m.senderName)}', '${escapeHTML(m.text)}')">Reply</span>`;
+            if(isMe) {
+              editDeleteOptions += `<span style="cursor:pointer;" onclick="editMessagePrompt('${roomId}', '${key}', '${msgEndpoint}', '${escapeHTML(m.text)}')">Edit</span><span style="cursor:pointer; color:var(--danger);" onclick="deleteMessage('${roomId}', '${key}', '${msgEndpoint}')">Delete</span>`;
+            }
+            editDeleteOptions += `</div>`;
+
+            let ticks = isMe ? `<i class="fa-solid fa-check-double" style="color:var(--blue-tick); font-size:0.65rem; margin-left:4px;"></i>` : '';
 
             msgBox.innerHTML += `
               <div class="message ${isMe ? 'outgoing' : 'incoming'}">
@@ -2090,7 +2288,7 @@
                 ${replyQuoteHtml}
                 ${content}
                 ${editDeleteOptions}
-                <span class="msg-time">${timeStr}</span>
+                <span class="msg-time">${timeStr} ${ticks}</span>
               </div>`;
           });
           msgBox.scrollTop = msgBox.scrollHeight;
@@ -2098,6 +2296,13 @@
           msgBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px;">Secure conversation opened.</div>`;
         }
       });
+    };
+
+    window.prepareReplyMessage = function(senderName, text) {
+      replyingToMsg = { senderName, text };
+      document.getElementById('reply-quote-text').innerText = `${senderName}: ${text}`;
+      document.getElementById('reply-preview-container').classList.remove('hidden');
+      document.getElementById('message-input').focus();
     };
 
     window.editMessagePrompt = async function(roomId, key, endpoint, oldText) {
@@ -2121,7 +2326,7 @@
       box.innerHTML = `
         <div style="text-align:center; max-width:90%;">
           <h3 style="color:var(--primary); margin-bottom:10px;"><i class="fa-solid fa-eye-slash"></i> View Once Media</h3>
-          <img src="${mediaUrl}" style="max-width:100%; max-height:70vh; border-radius:8px; display:block; margin:0 auto 15px auto;">
+          <img src="${mediaUrl}" style="max-width:100%; max-height:70vh; border-radius:10px; display:block; margin:0 auto 15px auto;">
           <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;">This media will disappear when closed.</p>
           <button class="btn btn-sm btn-danger" onclick="this.closest('.lightbox-modal').remove()">Close & Destroy</button>
         </div>`;
@@ -2134,7 +2339,7 @@
       box.innerHTML = `
         <div style="position:relative; max-width:90%; max-height:90%;">
           <i class="fa-solid fa-xmark" onclick="this.closest('.lightbox-modal').remove()" style="position:absolute; top:-40px; right:0; font-size:1.8rem; color:white; cursor:pointer;"></i>
-          <img src="${url}" style="max-width:100%; max-height:80vh; border-radius:8px; display:block; margin:0 auto;">
+          <img src="${url}" style="max-width:100%; max-height:80vh; border-radius:10px; display:block; margin:0 auto;">
         </div>`;
       document.body.appendChild(box);
     };
