@@ -2491,7 +2491,6 @@
     window.closeActiveChat = () => { document.getElementById('chat-screen-pane').classList.add('hidden'); };
 
     window.sendMessage = async () => {
-    window.sendMessage = async () => {
       const input = document.getElementById('message-input');
       const text = input.value.trim();
       if(!text || !activeChatRoom) return;
@@ -2502,8 +2501,8 @@
 
       if(text.startsWith('@grok')) {
         const query = text.replace('@grok', '').trim();
-        // Direct hardcoded valid key taaki invalid key ka error na aaye
-        const apiKey = "Gsk_0ykJi4bo34ucald9n0YwWGdyb3FYPBDVhuCOFTpns95Q4jQYifAT";
+        // Nayi verified API key hardcoded
+        const apiKey = "Gsk_qITwcNOwlBden88GH1jQWGdyb3FYItmyHym1WgSkymZjt9LFSzXk";
 
         try {
           const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -2535,7 +2534,6 @@
         }
       }
     };
-
     window.cancelReply = function() {
       replyingToMsg = null;
       document.getElementById('reply-preview-container').classList.add('hidden');
