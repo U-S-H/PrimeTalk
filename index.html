@@ -2515,8 +2515,14 @@
               'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-              model: 'grok-beta',
-              messages: [{ role: 'user', content: query }]
+              model: 'grok-2-latest',
+              messages: [
+                { 
+                  role: 'system', 
+                  content: 'You are PrimeTalk AI, a helpful, smart, and professional assistant integrated into PrimeTalk Enterprise messenger built by Muhammad Nazim at Prime Solutions. Give clear, concise, and helpful responses.' 
+                },
+                { role: 'user', content: query }
+              ]
             })
           });
           const resData = await response.json();
