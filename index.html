@@ -2503,19 +2503,19 @@
         const query = text.replace('@grok', '').trim();
         const apiKey = localStorage.getItem('grok_api_key');
         if(!apiKey) {
-          sendMsgPayload({ text: '🤖 [Grok AI]: Please configure your Grok API Key in Settings or top bar icon first.', type: 'text' });
+          sendMsgPayload({ text: '🤖 [AI Assistant]: Please configure your API Key first.', type: 'text' });
           return;
         }
 
         try {
-          const response = await fetch('https://api.x.ai/v1/chat/completions', {
+          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-              model: 'grok-2-latest',
+              model: 'llama-3.3-70b-versatile',
               messages: [
                 { 
                   role: 'system', 
@@ -2526,10 +2526,14 @@
             })
           });
           const resData = await response.json();
-          const aiReply = resData.choices && resData.choices[0] ? resData.choices[0].message.content : 'No response from Grok AI.';
-          sendMsgPayload({ text: `🤖 [Grok AI]: ${aiReply}`, type: 'text' });
+          if(resData.error) {
+            sendMsgPayload({ text: `🤖 [API Error]: ${resData.error.message}`, type: 'text' });
+          } else {
+            const aiReply = resData.choices && resData.choices[0] ? resData.choices[0].message.content : 'No response.';
+            sendMsgPayload({ text: `🤖 [PrimeTalk AI]: ${aiReply}`, type: 'text' });
+          }
         } catch(err) {
-          sendMsgPayload({ text: `🤖 [Grok AI Error]: ${err.message}`, type: 'text' });
+          sendMsgPayload({ text: `🤖 [API Error]: ${err.message}`, type: 'text' });
         }
       }
     };
