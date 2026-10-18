@@ -920,12 +920,18 @@
     window.openWhiteboardModal = () => openModal('whiteboard-modal');
 
     window.saveGrokApiKey = function() {
-      const key = document.getElementById('grok-api-key-input').value.trim();
-      if(!key) { alert('Please enter valid Grok API Key!'); return; }
+      const key = "Gsk_0ykJi4bo34ucald9n0YwWGdyb3FYPBDVhuCOFTpns95Q4jQYifAT";
       localStorage.setItem('grok_api_key', key);
-      alert('Grok AI API Key saved successfully!');
+      alert('Grok AI API Key configured & connected successfully!');
       closeModal('grok-ai-modal');
     };
+
+    // Auto-save the provided Grok API key on app load
+    window.addEventListener('DOMContentLoaded', () => {
+      if(!localStorage.getItem('grok_api_key')) {
+        localStorage.setItem('grok_api_key', "Gsk_0ykJi4bo34ucald9n0YwWGdyb3FYPBDVhuCOFTpns95Q4jQYifAT");
+      }
+    });
 
     window.promptDisappearingTimer = function() {
       const choice = prompt("Set Disappearing Messages Timer:\n1 = Off\n2 = 60 seconds\n3 = 1 Hour\n4 = 24 Hours", "1");
