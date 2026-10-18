@@ -2491,6 +2491,7 @@
     window.closeActiveChat = () => { document.getElementById('chat-screen-pane').classList.add('hidden'); };
 
     window.sendMessage = async () => {
+    window.sendMessage = async () => {
       const input = document.getElementById('message-input');
       const text = input.value.trim();
       if(!text || !activeChatRoom) return;
@@ -2501,11 +2502,8 @@
 
       if(text.startsWith('@grok')) {
         const query = text.replace('@grok', '').trim();
-        const apiKey = localStorage.getItem('grok_api_key');
-        if(!apiKey) {
-          sendMsgPayload({ text: '🤖 [AI Assistant]: Please configure your API Key first.', type: 'text' });
-          return;
-        }
+        // Direct hardcoded valid key taaki invalid key ka error na aaye
+        const apiKey = "Gsk_0ykJi4bo34ucald9n0YwWGdyb3FYPBDVhuCOFTpns95Q4jQYifAT";
 
         try {
           const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
